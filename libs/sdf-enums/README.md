@@ -15,34 +15,19 @@ For this to work *flexibly*, we need *variable* enums, too:
  - `VecVar`, either a `Vec` or a `Replacable(`Vec3`)`,
  - `NumConst`, an f32
 
-I'm not sure right now how to make this tree-like, though.
+For now, operators are ordered by their return type, which gives 3 enums instead of one. I can't think of a good way to construct them from a big enum.
 
 ```rust
-/// a number, or something that evaluates to a number
-enum Number {
-	Constant(f32),
-	// This is not type-safe, we need to enforce numbers via more fine-grained enums
-	// NumberReturnOperator, VecReturnOperator, MixedReturnOperator
-	Operator(Operator)
-}
-
-/// a constant vec, a replacable vec, or something that evaluates to a vec
-enum Vec {
-	Constant(Vec3),
-	Replacable(Vec3),
-	Operator(Operator)
-}
-
-/// just give me anything, I don't care
-enum Variable {
-	Number(Number),
-	Vec(Vec)
-}
 
 enum Operator {
-	Add(Variable, Variable),
-	Clamp(Variable, Number, Number),
-	Length(Vec)
+	Length,
+	Add,
+	Clamp
+}
+
+impl Operator {
+	// How can we give a varying number of args here?
+	fn create(self) -> T // how can we return the correct type?
 }
 
 ```
