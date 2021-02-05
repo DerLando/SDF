@@ -17,17 +17,12 @@ For this to work *flexibly*, we need *variable* enums, too:
 
 For now, operators are ordered by their return type, which gives 3 enums instead of one. I can't think of a good way to construct them from a big enum.
 
-```rust
+When implementing the `Circle` primitive, this approach really falls apart. `Length` only takes `Vec` as input, and we don't have any way to down-cast from a `VariableReturningOperator` without destroying the variable in the process.
+The only way around this is to implement f.e. `Add` 4 times:
 
-enum Operator {
-	Length,
-	Add,
-	Clamp
-}
+ - `Add(Vec, Vec)`, a `VecReturning` variant
+ - `AddNum(Vec, Number)`, a `VecReturning` variant
+ - `NumAdd(Number, Vec)`, a `VecReturning` variant
+ - `Add(Number, Number)` a `NumberReturning` variant
 
-impl Operator {
-	// How can we give a varying number of args here?
-	fn create(self) -> T // how can we return the correct type?
-}
-
-```
+This seems **really** contrived and gives me doubts if this is even the right approach to take.
