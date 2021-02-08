@@ -38,7 +38,16 @@ impl std::ops::Add<Variable> for Variable {
                 Variable::Replacable(r) => Variable::Constant(add_high(&v_l, &r.into())),
                 Variable::Operation(o) => Variable::Constant(v_l) + o.operate()
             },
-            _ => unreachable!()
+            Variable::Replacable(r_l) => match rhs {
+                Variable::Constant(v_r) => Variable::Constant(add_high(&r_l.into(), &v_r)),
+                Variable::Replacable(r) => Variable::Constant(add_high(&r_l.into(), &r.into())),
+                Variable::Operation(o) => Variable::Constant(r_l.into()) + o.operate()
+            },
+            Variable::Operation(o_l) => match rhs {
+                Variable::Constant(v_r) => Variable::Constant(v_r) + o_l.operate(),
+                Variable::Replacable(r) => Variable::Constant(r.into()) + o_l.operate(),
+                Variable::Operation(o) => o_l.operate() + o.operate()
+            }
         }
     }
 }
