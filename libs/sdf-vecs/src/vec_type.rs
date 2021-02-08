@@ -1,7 +1,7 @@
 use crate::{vec_1::Vec1, vec_2::Vec2, vec_3::Vec3, vec_4::Vec4};
 
 /// All possible vec dimensions
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum VecType {
     Vec1(Vec1),
     Vec2(Vec2),

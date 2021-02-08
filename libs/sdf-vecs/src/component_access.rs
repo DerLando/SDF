@@ -112,10 +112,10 @@ impl ComponentAccess for VecType {
 
     fn w(&self) -> f32 {
         match self {
-            VecType::Vec1(v) => v.z(),
-            VecType::Vec2(v) => v.z(),
-            VecType::Vec3(v) => v.z(),
-            VecType::Vec4(v) => v.z(),
+            VecType::Vec1(v) => v.w(),
+            VecType::Vec2(v) => v.w(),
+            VecType::Vec3(v) => v.w(),
+            VecType::Vec4(v) => v.w(),
         }
     }
 }
