@@ -50,53 +50,55 @@ impl NoOp {
     }
 }
 
-struct AddOp {
-    lhs: Box<dyn Spatial>,
-    rhs: Box<dyn Spatial>
+struct AddOp<L, R> where L: Spatial, R: Spatial{
+    lhs: L,
+    rhs: R
 }
 
-impl Spatial for AddOp {}
+impl<L, R> Spatial for AddOp<L, R> where L: Spatial, R: Spatial {}
 
-impl VariableContainer for AddOp {
+impl<L, R> VariableContainer for AddOp<L, R> where L: Spatial, R: Spatial {
     fn replace_variable(&mut self, var: &Vec3) {
         self.lhs.replace_variable(var);
         self.rhs.replace_variable(var);
     }
 }
 
-impl Operator<VecType> for AddOp {
+impl<L, R> Operator<VecType> for AddOp<L, R> where L: Spatial, R: Spatial {
     fn operate(&self) -> VecType {
         add_high(&self.lhs.operate(), &self.rhs.operate())
     }
 }
 
-struct LengthOp(Box<dyn Spatial>);
+struct LengthOp<S: Spatial>(S);
 
-impl Spatial for LengthOp { }
+impl<S> Spatial for LengthOp<S> where S: Spatial { }
 
-impl VariableContainer for LengthOp {
+impl<S> VariableContainer for LengthOp<S>
+where S: Spatial {
     fn replace_variable(&mut self, var: &Vec3) {
         self.0.replace_variable(var);
     }
 }
 
-impl Operator<VecType> for LengthOp {
+impl<S> Operator<VecType> for LengthOp<S>
+where S: Spatial {
     fn operate(&self) -> VecType {
         Vec1::new(self.0.operate().length()).into()
     }
 }
 
-struct NegOp(Box<dyn Spatial>);
+struct NegOp<S: Spatial>(S);
 
-impl Spatial for NegOp { }
+impl<S> Spatial for NegOp<S> where S: Spatial { }
 
-impl VariableContainer for NegOp {
+impl<S> VariableContainer for NegOp<S> where S: Spatial {
     fn replace_variable(&mut self, var: &Vec3) {
         self.0.replace_variable(var)
     }
 }
 
-impl Operator<VecType> for NegOp {
+impl<S> Operator<VecType> for NegOp<S> where S: Spatial {
     fn operate(&self) -> VecType {
         -self.0.operate()
     }
@@ -120,7 +122,7 @@ impl TraitSDF {
     }
 
     fn var_length() -> Self {
-        let length = LengthOp(Box::new(NoOp::new_var()));
+        let length = LengthOp(NoOp::new_var());
 
         Self {
             root: Box::new(length)
@@ -129,16 +131,16 @@ impl TraitSDF {
 
     pub fn circle(center: &Vec3, radius: f32) -> Self {
         // length(P-C)-r, where P is query point, C is Center vec and r is radius
-        let center_neg = NegOp(Box::new(NoOp::new_const(&VecType::Vec3(*center))));
+        let center_neg = NegOp(NoOp::new_const(&VecType::Vec3(*center)));
         let center_var_sub = AddOp {
-            lhs: Box::new(NoOp::new_var()),
-            rhs: Box::new(center_neg),
+            lhs: NoOp::new_var(),
+            rhs: center_neg,
         };
-        let dist_from_center = LengthOp(Box::new(center_var_sub));
-        let radius_neg = NegOp(Box::new(NoOp::new_const(&VecType::Vec1(Vec1::new(radius)))));
+        let dist_from_center = LengthOp(center_var_sub);
+        let radius_neg = NegOp(NoOp::new_const(&VecType::Vec1(Vec1::new(radius))));
         let radius_sub = AddOp {
-            lhs: Box::new(dist_from_center),
-            rhs: Box::new(radius_neg)
+            lhs: dist_from_center,
+            rhs: radius_neg
         };
 
         Self {
