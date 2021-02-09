@@ -123,7 +123,7 @@ impl Operator<VecType> for NegOp {
     }
 }
 
-struct TraitSDF {
+pub struct TraitSDF {
     root: Box<dyn Spatial>
 }
 
@@ -148,7 +148,7 @@ impl TraitSDF {
         }
     }
 
-    fn circle(center: &Vec3, radius: f32) -> Self {
+    pub fn circle(center: &Vec3, radius: f32) -> Self {
         // length(P-C)-r, where P is query point, C is Center vec and r is radius
         let center_neg = NegOp(VecVar::Const(VecType::Vec3(*center)));
         let center_var_sub = AddOp {
