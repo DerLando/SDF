@@ -115,7 +115,7 @@ impl VariableContainer for Operation {
     }
 }
 
-struct EnumSDF {
+pub struct EnumSDF {
     root: Operation
 }
 

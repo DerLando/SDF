@@ -1,6 +1,6 @@
 use crate::{component_access::ComponentAccess, vec_1::Vec1, vec_2::Vec2, vec_3::Vec3, vec_4::Vec4, vec_type::VecType};
 
-trait Length {
+pub trait Length {
     fn length(&self) -> f32;
 }
 

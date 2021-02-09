@@ -36,11 +36,11 @@ impl std::ops::Sub<Vec4> for Vec4 {
     }
 }
 
-fn sub_high(a: &VecType, b: &VecType) -> VecType {
+pub fn sub_high(a: &VecType, b: &VecType) -> VecType {
     add_high(a, &-*b)
 }
 
-fn sub_low(a: &VecType, b: &VecType) -> VecType {
+pub fn sub_low(a: &VecType, b: &VecType) -> VecType {
     add_low(a, &-*b)
 }
 

@@ -1,7 +1,7 @@
 use crate::{ComponentDimensionVec, Dimension};
 
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy, Default)]
 pub struct Vec1 {
     pub(crate) components: [f32; 1]
 }
