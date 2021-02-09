@@ -15,7 +15,8 @@ trait Operator<T> {
     fn operate(&self) -> T;
 }
 
-/// Operators that always return a VecType
+/// Operators that always return a [`VecType`].
+/// This marker trait is stored in all Ops as a Trait object
 trait Spatial: Operator<VecType> + VariableContainer { }
 
 struct NoOp(Variable);

@@ -13,5 +13,5 @@ sdf-vecs = { path = "../sdf-vecs" }
 criterion = "0.3"
 
 [[bench]]
-name = "circle_benchmark"
+name = "circle_trait_benchmark"
 harness = false
