@@ -1,6 +1,6 @@
 use crate::{Dimension, component_access::ComponentAccess, scale::{Scale, scale_n}, vec_1::Vec1, vec_2::Vec2, vec_3::Vec3, vec_4::Vec4, vec_type::VecType};
 
-use super::OperatorKind;
+use super::{OperatorKind, scale_same};
 
 impl std::ops::Add<Vec1> for Vec1 {
     type Output = Vec1;
@@ -44,19 +44,9 @@ impl std::ops::Add<Vec4> for Vec4 {
 // }
 
 fn add(a: &VecType, b: &VecType, kind: OperatorKind) -> VecType {
-    let l_dim = a.dimension();
-    let r_dim = b.dimension();
-    let max_dim = {
-        match kind {
-            OperatorKind::High => l_dim.max(r_dim),
-            OperatorKind::Low => l_dim.min(r_dim)
-        }
-    };
+    let (dim, lhs, rhs) = scale_same(a, b, kind);
 
-    let lhs = scale_n(a, max_dim);
-    let rhs = scale_n(b, max_dim);
-
-    match max_dim {
+    match dim {
         1 => (lhs.scale1() + rhs.scale1()).into(),
         2 => (lhs.scale2() + rhs.scale2()).into(),
         3 => (lhs.scale3() + rhs.scale3()).into(),
