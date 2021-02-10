@@ -40,6 +40,7 @@ impl TraitSDF {
         circle(center, radius)
     }
 
+    /// Create a rectangle centered at (0, 0), with max extents of x and y
     pub fn rectangle(width: f32, height: f32) -> Self {
         box_2d(width, height)
     }
@@ -69,5 +70,21 @@ mod tests {
         assert_eq!(-10.0, sdf.sign_at(&Vec3::new(0.0, -1.0, 0.0)));
         assert_eq!(0.0, sdf.sign_at(&Vec3::new(10.0, -1.0, 0.0)));
         assert_eq!(10.0, sdf.sign_at(&Vec3::new(20.0, -1.0, 0.0)));
+    }
+
+    #[test]
+    fn rectangle_works() {
+        let mut rect = TraitSDF::rectangle(3.0, 6.0);
+
+        assert_eq!(0.0, rect.sign_at(&Vec3::new(3.0, 6.0, 0.0)));
+        assert_eq!(1.5, rect.sign_at(&Vec3::new(4.5, 3.0, 0.0)));
+    }
+
+    #[test]
+    fn cuboid_works() {
+        let mut cuboid = TraitSDF::cuboid(1.0, 2.0, 3.0);
+
+        assert_eq!(0.0, cuboid.sign_at(&Vec3::new(1.0, 2.0, 3.0)));
+        assert_eq!(2.0, cuboid.sign_at(&Vec3::new(3.0, 0.0, 0.0)));
     }
 }
