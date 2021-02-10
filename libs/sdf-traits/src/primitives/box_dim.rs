@@ -10,34 +10,34 @@ fn box_nd(dimensions: VecType) -> TraitSDF {
     // q = abs(P) - R
     // d = length(max(q,0)) + min(max(q.x, q.y), 0)
 
-    let abs_var = Abs(NoOp::new_var());
+    let abs_var = Abs::new(Box::new(NoOp::new_var()));
     let dim = NoOp::new_const(&dimensions);
     let zero = NoOp::new_const(&VecType::Vec1(Vec1::new(0.0)));
 
     // distance vector, will be re-used
-    let d = Sub {
-        lhs: abs_var,
-        rhs: dim.clone()
-    };
+    let d = Sub::new(
+        Box::new(abs_var),
+        Box::new(dim.clone())
+    );
 
-    let max_zero = Max {
-        lhs: d.clone(),
-        rhs: zero.clone()
-    };
+    let max_zero = Max::new(
+        Box::new(d.clone()),
+        Box::new(zero.clone())
+    );
 
-    let length_max = Length(max_zero);
+    let length_max = Length::new(Box::new(max_zero));
 
-    let dim_max_comp = MaxComp(dim.clone());
+    let dim_max_comp = MaxComp::new(Box::new(dim.clone()));
 
-    let min_zero = Min {
-        lhs: dim_max_comp,
-        rhs: zero.clone()
-    };
+    let min_zero = Min::new(
+        Box::new(dim_max_comp),
+        Box::new(zero.clone())
+    );
 
-    let root = Add {
-        lhs: length_max,
-        rhs: min_zero
-    };
+    let root = Add::new(
+        Box::new(length_max),
+        Box::new(min_zero)
+    );
 
     TraitSDF::new(Box::new(root))
 }

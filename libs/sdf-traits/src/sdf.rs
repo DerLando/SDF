@@ -28,7 +28,7 @@ impl TraitSDF {
     }
 
     fn var_length() -> Self {
-        let length = Length(NoOp::new_var());
+        let length = Length::new(Box::new(NoOp::new_var()));
 
         Self {
             root: Box::new(length)

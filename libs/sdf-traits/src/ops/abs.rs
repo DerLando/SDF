@@ -2,19 +2,12 @@ use sdf_vecs::{VecType, ops::Abs as AbsTrait};
 
 use crate::{Operator, Spatial, VariableContainer};
 
-#[derive(Clone)]
-pub(crate) struct Abs<S: Spatial>(pub(crate) S);
+use super::*;
 
-impl<S> Spatial for Abs<S> where S: Spatial { }
+impl_unary_op!(Abs);
 
-impl<S> Operator<VecType> for Abs<S> where S: Spatial {
+impl Operator<VecType> for Abs {
     fn operate(&self) -> VecType {
         self.0.operate().abs()
-    }
-}
-
-impl<S> VariableContainer for Abs<S> where S: Spatial {
-    fn replace_variable(&mut self, var: &sdf_vecs::Vec3) {
-        self.0.replace_variable(var)
     }
 }

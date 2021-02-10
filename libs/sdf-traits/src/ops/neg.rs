@@ -2,18 +2,9 @@ use sdf_vecs::{Vec3, VecType};
 
 use crate::{Operator, Spatial, VariableContainer};
 
-#[derive(Clone)]
-pub(crate) struct Neg<S: Spatial>(pub(crate) S);
+impl_unary_op!(Neg);
 
-impl<S> Spatial for Neg<S> where S: Spatial { }
-
-impl<S> VariableContainer for Neg<S> where S: Spatial {
-    fn replace_variable(&mut self, var: &Vec3) {
-        self.0.replace_variable(var)
-    }
-}
-
-impl<S> Operator<VecType> for Neg<S> where S: Spatial {
+impl Operator<VecType> for Neg {
     fn operate(&self) -> VecType {
         -self.0.operate()
     }

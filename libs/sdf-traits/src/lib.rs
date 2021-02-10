@@ -1,6 +1,9 @@
+use dyn_clone::DynClone;
 use sdf_vecs::{Vec3, VecType};
 
+#[macro_use]
 mod ops;
+
 mod sdf;
 mod primitives;
 
@@ -17,4 +20,6 @@ trait Operator<T> {
 
 /// Operators that always return a [`VecType`].
 /// This marker trait is stored in all Ops as a Trait object
-trait Spatial: Operator<VecType> + VariableContainer { }
+trait Spatial: Operator<VecType> + VariableContainer + DynClone { }
+
+dyn_clone::clone_trait_object!(Spatial);
