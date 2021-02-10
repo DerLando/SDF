@@ -1,6 +1,4 @@
-use ops::{AddOp, LengthOp, NegOp, NoOp};
-use sdf_vecs::{Vec3, Vec1, VecType, ops::{Length, add_high}, ComponentAccess};
-use std::ops::DerefMut;
+use sdf_vecs::{Vec3, VecType};
 
 mod ops;
 mod sdf;

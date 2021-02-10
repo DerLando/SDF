@@ -1,11 +1,11 @@
 mod noop;
-mod addop;
-mod negop;
-mod lengthop;
-mod subop;
+mod add;
+mod neg;
+mod length;
+mod sub;
 
 pub(crate) use self::noop::NoOp;
-pub(crate) use self::addop::AddOp;
-pub(crate) use self::negop::NegOp;
-pub(crate) use self::lengthop::LengthOp;
-pub(crate) use self::subop::SubOp;
+pub(crate) use self::add::Add;
+pub(crate) use self::neg::Neg;
+pub(crate) use self::length::Length;
+pub(crate) use self::sub::Sub;

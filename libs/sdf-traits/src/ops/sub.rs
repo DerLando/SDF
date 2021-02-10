@@ -2,19 +2,19 @@ use sdf_vecs::{VecType, ops::sub_high};
 
 use crate::{Operator, Spatial, VariableContainer};
 
-pub(crate) struct SubOp<L, R> 
+pub(crate) struct Sub<L, R> 
 where L: Spatial, R: Spatial 
 {
     pub(crate) lhs: L,
     pub(crate) rhs: R
 }
 
-impl<L, R> Spatial for SubOp<L, R>
+impl<L, R> Spatial for Sub<L, R>
 where L: Spatial, R: Spatial 
 { }
 
 
-impl<L, R> Operator<VecType> for SubOp<L, R>
+impl<L, R> Operator<VecType> for Sub<L, R>
 where L: Spatial, R: Spatial 
 {
     fn operate(&self) -> VecType {
@@ -22,7 +22,7 @@ where L: Spatial, R: Spatial
     }
 }
 
-impl<L, R> VariableContainer for SubOp<L, R>
+impl<L, R> VariableContainer for Sub<L, R>
 where L: Spatial, R: Spatial 
 {
     fn replace_variable(&mut self, var: &sdf_vecs::Vec3) {

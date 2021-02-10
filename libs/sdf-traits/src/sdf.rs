@@ -2,7 +2,7 @@ use std::ops::DerefMut;
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{AddOp, LengthOp, NegOp, NoOp}};
+use crate::{Spatial, ops::{Add, Length, Neg, NoOp}};
 
 pub struct TraitSDF {
     root: Box<dyn Spatial>
@@ -22,7 +22,7 @@ impl TraitSDF {
     }
 
     fn var_length() -> Self {
-        let length = LengthOp(NoOp::new_var());
+        let length = Length(NoOp::new_var());
 
         Self {
             root: Box::new(length)
@@ -31,14 +31,14 @@ impl TraitSDF {
 
     pub fn circle(center: &Vec3, radius: f32) -> Self {
         // length(P-C)-r, where P is query point, C is Center vec and r is radius
-        let center_neg = NegOp(NoOp::new_const(&VecType::Vec3(*center)));
-        let center_var_sub = AddOp {
+        let center_neg = Neg(NoOp::new_const(&VecType::Vec3(*center)));
+        let center_var_sub = Add {
             lhs: NoOp::new_var(),
             rhs: center_neg,
         };
-        let dist_from_center = LengthOp(center_var_sub);
-        let radius_neg = NegOp(NoOp::new_const(&VecType::Vec1(Vec1::new(radius))));
-        let radius_sub = AddOp {
+        let dist_from_center = Length(center_var_sub);
+        let radius_neg = Neg(NoOp::new_const(&VecType::Vec1(Vec1::new(radius))));
+        let radius_sub = Add {
             lhs: dist_from_center,
             rhs: radius_neg
         };
