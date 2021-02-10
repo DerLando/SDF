@@ -1,6 +1,6 @@
 use sdf_vecs::{Vec3, VecType};
 
-use crate::{Operator, Spatial, VariableContainer};
+use crate::{Boxed, Operator, Spatial, VariableContainer};
 
 #[derive(Clone)]
 pub(crate) enum Variable {
@@ -38,5 +38,11 @@ impl NoOp {
 
     pub(crate) fn new_var() -> Self {
         Self(Variable::Replaceable(Vec3::default()))
+    }
+}
+
+impl Boxed for NoOp {
+    fn boxed(self) -> Box<dyn Spatial> {
+        Box::new(self)
     }
 }

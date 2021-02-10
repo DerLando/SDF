@@ -1,6 +1,6 @@
 use sdf_vecs::{ComponentAccess, Vec1, VecType, Vec3};
 
-use crate::{Operator, Spatial, VariableContainer};
+use crate::{Operator, Spatial, VariableContainer, Boxed};
 
 impl_unary_op!(X);
 

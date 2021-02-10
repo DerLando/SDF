@@ -18,8 +18,12 @@ trait Operator<T> {
     fn operate(&self) -> T;
 }
 
+pub(crate) trait Boxed {
+    fn boxed(self) -> Box<dyn Spatial>;
+}
+
 /// Operators that always return a [`VecType`].
 /// This marker trait is stored in all Ops as a Trait object
-trait Spatial: Operator<VecType> + VariableContainer + DynClone { }
+trait Spatial: Operator<VecType> + VariableContainer + DynClone + Boxed { }
 
 dyn_clone::clone_trait_object!(Spatial);

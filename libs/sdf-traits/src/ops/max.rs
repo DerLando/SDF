@@ -1,6 +1,6 @@
 use sdf_vecs::{VecType, ops::max_high, Vec3};
 
-use crate::{Operator, Spatial, VariableContainer};
+use crate::{Operator, Spatial, VariableContainer, Boxed};
 
 impl_binary_op!(Max);
 

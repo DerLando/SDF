@@ -16,6 +16,10 @@ impl TraitSDF {
         }
     }
 
+    pub(crate) fn into_inner(self) -> Box<dyn Spatial> {
+        self.root
+    }
+
     pub fn sign_at(&mut self, position: &Vec3) -> f32 {
         // insert position for variable
         self.root.deref_mut().replace_variable(position);
@@ -94,6 +98,16 @@ impl TraitSDF {
         );
 
         Self::new(Box::new(root))
+    }
+
+    pub fn rounded_edges(sdf: Self, radius: f32) -> Self {
+        Self::new(
+            Box::new(
+                Sub::new(
+                    sdf.into_inner(),
+                    Box::new(NoOp::new_const(&VecType::Vec1(Vec1::new(radius))))
+                )
+            ))
     }
 }
 

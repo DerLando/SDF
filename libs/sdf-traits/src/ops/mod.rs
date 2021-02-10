@@ -25,6 +25,12 @@ macro_rules! impl_unary_op {
                 self.0.replace_variable(var)
             }
         }
+
+        impl Boxed for $op_name {
+            fn boxed(self) -> Box<dyn Spatial> {
+                Box::new(self)
+            }
+        }
     };  
 
 }
@@ -52,6 +58,12 @@ macro_rules! impl_binary_op {
             fn replace_variable(&mut self, var: &Vec3) {
                 self.lhs.replace_variable(var);
                 self.rhs.replace_variable(var)
+            }
+        }
+
+        impl Boxed for $op_name {
+            fn boxed(self) -> Box<dyn Spatial> {
+                Box::new(self)
             }
         }
     };

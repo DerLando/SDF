@@ -1,6 +1,6 @@
 use sdf_vecs::{VecType, ops::Abs as AbsTrait};
 
-use crate::{Operator, Spatial, VariableContainer};
+use crate::{Operator, Spatial, VariableContainer, Boxed};
 
 use super::*;
 
