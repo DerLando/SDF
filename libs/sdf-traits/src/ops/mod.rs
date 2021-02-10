@@ -67,6 +67,7 @@ mod abs;
 mod max;
 mod min;
 mod max_comp;
+mod mul;
 
 pub(crate) use self::noop::NoOp;
 pub(crate) use self::add::Add;
@@ -78,3 +79,4 @@ pub(crate) use self::abs::Abs;
 pub(crate) use self::max::Max;
 pub(crate) use self::min::Min;
 pub(crate) use self::max_comp::MaxComp;
+pub(crate) use self::mul::Mul;

@@ -2,8 +2,9 @@ use std::ops::DerefMut;
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{Max, Length, Min, NoOp, Sub, Add}, primitives::{box_2d, box_3d, circle}};
+use crate::{Spatial, ops::{Max, Length, Min, NoOp, Sub, Add, Mul}, primitives::{box_2d, box_3d, circle}};
 
+#[derive(Clone)]
 pub struct TraitSDF {
     root: Box<dyn Spatial>
 }
@@ -65,6 +66,34 @@ impl TraitSDF {
         );
 
         Self::new(Box::new(max))
+    }
+
+    pub fn blend(a: Self, b: Self, factor: f32) -> Self {
+        // a is blend factor, L is left tree and R is right tree
+        // d = (1 - a) * L + a * R
+
+        let fac = NoOp::new_const(&VecType::Vec1(Vec1::new(factor)));
+        let fac_dist = Sub::new(
+            Box::new(NoOp::new_const(&VecType::Vec1(Vec1::new(1.0)))),
+            Box::new(fac.clone())
+        );
+
+        let left_blend = Mul::new(
+            Box::new(fac_dist),
+            a.root
+        );
+
+        let right_blend = Mul::new(
+            Box::new(fac),
+            b.root
+        );
+
+        let root = Add::new(
+            Box::new(left_blend),
+            Box::new(right_blend)
+        );
+
+        Self::new(Box::new(root))
     }
 }
 

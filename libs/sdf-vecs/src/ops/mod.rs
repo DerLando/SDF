@@ -5,6 +5,7 @@ mod length;
 mod max;
 mod min;
 mod abs;
+mod mul;
 
 enum OperatorKind {
     /// Scale all vecs to the highes dimension between them and operate afterwards
@@ -19,6 +20,7 @@ pub use length::{Length};
 pub use max::{max_high, max_low, MaxComp};
 pub use min::{min_high, min_low};
 pub use abs::{Abs};
+pub use mul::{mul_high, mul_low};
 
 use crate::{VecType, dimension::Dimension, scale::scale_n};
 
