@@ -1,4 +1,4 @@
-use crate::{Dimension, component_access::ComponentAccess, vec_2::Vec2, vec_3::Vec3};
+use crate::{Dimension, VecType, component_access::ComponentAccess, scale::Scale, vec_2::Vec2, vec_3::Vec3};
 
 trait SwizzleDim {
     type Output: Dimension;
@@ -174,5 +174,138 @@ impl SwizzleDim3 for Vec3 {
 
     fn zyx(&self) -> Self::Output {
         Self::new(self.z(), self.y(), self.x())
+    }
+}
+
+// TODO: impl swizzles for vectype
+impl SwizzleDim for VecType {
+    type Output = VecType;
+}
+
+impl SwizzleDim2 for VecType {
+    fn xx(&self) -> Self::Output {
+        self.scale2().xx().into()
+    }
+
+    fn xy(&self) -> Self::Output {
+        self.scale2().xy().into()
+    }
+
+    fn yx(&self) -> Self::Output {
+        self.scale2().yx().into()
+    }
+
+    fn yy(&self) -> Self::Output {
+        self.scale2().yy().into()
+    }
+}
+
+impl SwizzleDim3 for VecType {
+    fn xxx(&self) -> Self::Output {
+        self.scale3().xxx().into()
+    }
+
+    fn xxy(&self) -> Self::Output {
+        self.scale3().xxy().into()
+    }
+
+    fn xxz(&self) -> Self::Output {
+        self.scale3().xxz().into()
+    }
+
+    fn xyx(&self) -> Self::Output {
+        self.scale3().xyx().into()
+    }
+
+    fn xzx(&self) -> Self::Output {
+        self.scale3().xzx().into()
+    }
+
+    fn xzy(&self) -> Self::Output {
+        self.scale3().xzy().into()
+    }
+
+    fn xyz(&self) -> Self::Output {
+        self.scale3().xyz().into()
+    }
+
+    fn yxx(&self) -> Self::Output {
+        self.scale3().yxx().into()
+    }
+
+    fn zxx(&self) -> Self::Output {
+        self.scale3().zxx().into()
+    }
+
+    fn yyy(&self) -> Self::Output {
+        self.scale3().yyy().into()
+    }
+
+    fn yyx(&self) -> Self::Output {
+        self.scale3().yyx().into()
+    }
+
+    fn yyz(&self) -> Self::Output {
+        self.scale3().yyz().into()
+    }
+
+    fn yxy(&self) -> Self::Output {
+        self.scale3().yxy().into()
+    }
+
+    fn yzy(&self) -> Self::Output {
+        self.scale3().yzy().into()
+    }
+
+    fn xyy(&self) -> Self::Output {
+        self.scale3().xyy().into()
+    }
+
+    fn zyy(&self) -> Self::Output {
+        self.scale3().zyy().into()
+    }
+
+    fn yxz(&self) -> Self::Output {
+        self.scale3().yxz().into()
+    }
+
+    fn yzx(&self) -> Self::Output {
+        self.scale3().yzx().into()
+    }
+
+    fn zzz(&self) -> Self::Output {
+        self.scale3().zzz().into()
+    }
+
+    fn zzx(&self) -> Self::Output {
+        self.scale3().zzx().into()
+    }
+
+    fn zzy(&self) -> Self::Output {
+        self.scale3().zzy().into()
+    }
+
+    fn zxz(&self) -> Self::Output {
+        self.scale3().zxz().into()
+    }
+
+    fn zyz(&self) -> Self::Output {
+        self.scale3().zyz().into()
+    }
+
+    fn xzz(&self) -> Self::Output {
+        self.scale3().xzz().into()
+    }
+
+    fn yzz(&self) -> Self::Output {
+        self.scale3().yzz().into()
+    }
+
+    fn zxy(&self) -> Self::Output {
+        self.scale3().zxy().into()
+    }
+
+    fn zyx(&self) -> Self::Output {
+        self.scale3().zyx().into()
     }
 }
