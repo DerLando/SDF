@@ -1,10 +1,10 @@
 use sdf_vecs::{VecType, ops::Abs as AbsTrait};
 
-use crate::{Operator, Spatial, VariableContainer, Boxed};
+use crate::{Operator, Spatial, VariableContainer, };
 
 use super::*;
 
-impl_unary_op!(Abs);
+impl_unary_op!(Abs, abs);
 
 impl Operator<VecType> for Abs {
     fn operate(&self) -> VecType {

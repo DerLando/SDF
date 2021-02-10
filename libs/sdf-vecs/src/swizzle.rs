@@ -1,10 +1,10 @@
 use crate::{Dimension, VecType, component_access::ComponentAccess, scale::Scale, vec_2::Vec2, vec_3::Vec3};
 
-trait SwizzleDim {
+pub trait SwizzleDim {
     type Output: Dimension;
 }
 
-trait SwizzleDim2: SwizzleDim {
+pub trait SwizzleDim2: SwizzleDim {
     fn xx(&self) -> Self::Output;
     fn xy(&self) -> Self::Output;
     fn yx(&self) -> Self::Output;
@@ -33,7 +33,7 @@ impl SwizzleDim2 for Vec2 {
     }
 }
 
-trait SwizzleDim3: SwizzleDim {
+pub trait SwizzleDim3: SwizzleDim {
     fn xxx(&self) -> Self::Output;
     fn xxy(&self) -> Self::Output;
     fn xxz(&self) -> Self::Output;

@@ -1,8 +1,8 @@
 use sdf_vecs::{Vec3, VecType};
 
-use crate::{Operator, Spatial, VariableContainer, Boxed};
+use crate::{Operator, Spatial, VariableContainer, };
 
-impl_unary_op!(Neg);
+impl_unary_op!(Neg, neg);
 
 impl Operator<VecType> for Neg {
     fn operate(&self) -> VecType {

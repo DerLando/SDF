@@ -1,8 +1,8 @@
 use sdf_vecs::{Vec1, Vec3, VecType, ops::MaxComp as MaxCompTrait};
 
-use crate::{Operator, Spatial, VariableContainer, Boxed};
+use crate::{Operator, Spatial, VariableContainer, };
 
-impl_unary_op!(MaxComp);
+impl_unary_op!(MaxComp, max_comp);
 
 impl Operator<VecType> for MaxComp {
     fn operate(&self) -> VecType {

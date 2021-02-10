@@ -1,29 +1,25 @@
+#[macro_use]
+
 use dyn_clone::DynClone;
 use sdf_vecs::{Vec3, VecType};
 
-#[macro_use]
 mod ops;
-
 mod sdf;
 mod primitives;
 
 pub use sdf::TraitSDF;
 
-trait VariableContainer {
+pub trait VariableContainer {
     fn replace_variable(&mut self, var: &Vec3);
 }
 
 /// The basic operator trait all operators have to implement
-trait Operator<T> {
+pub trait Operator<T> {
     fn operate(&self) -> T;
-}
-
-pub(crate) trait Boxed {
-    fn boxed(self) -> Box<dyn Spatial>;
 }
 
 /// Operators that always return a [`VecType`].
 /// This marker trait is stored in all Ops as a Trait object
-trait Spatial: Operator<VecType> + VariableContainer + DynClone + Boxed { }
+pub trait Spatial: Operator<VecType> + VariableContainer + DynClone { }
 
 dyn_clone::clone_trait_object!(Spatial);

@@ -1,8 +1,8 @@
 use sdf_vecs::{VecType, ops::max_high, Vec3};
 
-use crate::{Operator, Spatial, VariableContainer, Boxed};
+use crate::{Operator, Spatial, VariableContainer, };
 
-impl_binary_op!(Max);
+impl_binary_op!(Max, max);
 
 impl Operator<VecType> for Max {
     fn operate(&self) -> VecType {

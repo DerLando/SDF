@@ -1,6 +1,6 @@
-use sdf_vecs::{Vec3, VecType};
+use sdf_vecs::{Vec1, Vec2, Vec3, Vec4, VecType};
 
-use crate::{Boxed, Operator, Spatial, VariableContainer};
+use crate::{Operator, Spatial, VariableContainer};
 
 #[derive(Clone)]
 pub(crate) enum Variable {
@@ -41,8 +41,32 @@ impl NoOp {
     }
 }
 
-impl Boxed for NoOp {
-    fn boxed(self) -> Box<dyn Spatial> {
-        Box::new(self)
+impl From<f32> for NoOp {
+    fn from(arg: f32) -> Self {
+        NoOp::new_const(&VecType::Vec1(Vec1::new(arg)))
+    }
+}
+
+impl From<Vec1> for NoOp {
+    fn from(arg: Vec1) -> Self {
+        NoOp::new_const(&VecType::Vec1(arg))
+    }
+}
+
+impl From<Vec2> for NoOp {
+    fn from(arg: Vec2) -> Self {
+        NoOp::new_const(&VecType::Vec2(arg))
+    }
+}
+
+impl From<Vec3> for NoOp {
+    fn from(arg: Vec3) -> Self {
+        NoOp::new_const(&VecType::Vec3(arg))
+    }
+}
+
+impl From<Vec4> for NoOp {
+    fn from(arg: Vec4) -> Self {
+        NoOp::new_const(&VecType::Vec4(arg))
     }
 }

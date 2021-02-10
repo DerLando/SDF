@@ -1,8 +1,8 @@
 use sdf_vecs::{VecType, ops::sub_high, Vec3};
 
-use crate::{Operator, Spatial, VariableContainer, Boxed};
+use crate::{Operator, Spatial, VariableContainer, };
 
-impl_binary_op!(Sub);
+impl_binary_op!(Sub, sub);
 
 impl Operator<VecType> for Sub {
     fn operate(&self) -> VecType {
