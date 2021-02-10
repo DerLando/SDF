@@ -2,7 +2,7 @@ use std::ops::DerefMut;
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{Add, Length, Neg, NoOp}, primitives::{box_2d, box_3d, circle}};
+use crate::{Spatial, ops::{Max, Length, Min, NoOp, Sub, Add}, primitives::{box_2d, box_3d, circle}};
 
 pub struct TraitSDF {
     root: Box<dyn Spatial>
@@ -47,6 +47,24 @@ impl TraitSDF {
 
     pub fn cuboid(x: f32, y: f32, z: f32) -> Self {
         box_3d(x, y, z)
+    }
+
+    pub fn union(a: Self, b: Self) -> Self {
+        let min = Min::new(
+            a.root,
+            b.root
+        );
+
+        Self::new(Box::new(min))
+    }
+
+    pub fn intersection(a: Self, b: Self) -> Self {
+        let max = Max::new(
+            a.root,
+            b.root
+        );
+
+        Self::new(Box::new(max))
     }
 }
 
