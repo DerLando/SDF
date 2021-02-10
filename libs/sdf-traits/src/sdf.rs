@@ -2,7 +2,7 @@ use std::ops::DerefMut;
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{Add, Length, Neg, NoOp}, primitives::circle};
+use crate::{Spatial, ops::{Add, Length, Neg, NoOp}, primitives::{box_2d, box_3d, circle}};
 
 pub struct TraitSDF {
     root: Box<dyn Spatial>
@@ -38,6 +38,14 @@ impl TraitSDF {
     pub fn circle(center: &Vec3, radius: f32) -> Self {
         // length(P-C)-r, where P is query point, C is Center vec and r is radius
         circle(center, radius)
+    }
+
+    pub fn rectangle(width: f32, height: f32) -> Self {
+        box_2d(width, height)
+    }
+
+    pub fn cuboid(x: f32, y: f32, z: f32) -> Self {
+        box_3d(x, y, z)
     }
 }
 

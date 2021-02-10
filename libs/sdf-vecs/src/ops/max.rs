@@ -54,3 +54,42 @@ pub fn max_high(a: &VecType, b: &VecType) -> VecType {
 pub fn max_low(a: &VecType, b: &VecType) -> VecType {
     max(a, b, OperatorKind::Low)
 }
+
+pub trait MaxComp {
+    fn max_comp(&self) -> f32;
+}
+
+impl MaxComp for Vec1 {
+    fn max_comp(&self) -> f32 {
+        self.x()
+    }
+}
+
+impl MaxComp for Vec2 {
+    fn max_comp(&self) -> f32 {
+        self.x().max(self.y())
+    }
+}
+
+impl MaxComp for Vec3 {
+    fn max_comp(&self) -> f32 {
+        self.x().max(self.y().max(self.z()))
+    }
+}
+
+impl MaxComp for Vec4 {
+    fn max_comp(&self) -> f32 {
+        self.x().max(self.y().max(self.z().max(self.w())))
+    }
+}
+
+impl MaxComp for VecType {
+    fn max_comp(&self) -> f32 {
+        match self {
+            VecType::Vec1(v) => v.max_comp(),
+            VecType::Vec2(v) => v.max_comp(),
+            VecType::Vec3(v) => v.max_comp(),
+            VecType::Vec4(v) => v.max_comp(),
+        }
+    }
+}

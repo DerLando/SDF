@@ -16,7 +16,7 @@ enum OperatorKind {
 pub use add::{add_high, add_low};
 pub use sub::{sub_high, sub_low};
 pub use length::{Length};
-pub use max::{max_high, max_low};
+pub use max::{max_high, max_low, MaxComp};
 pub use min::{min_high, min_low};
 pub use abs::{Abs};
 

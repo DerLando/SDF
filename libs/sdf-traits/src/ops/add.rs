@@ -2,6 +2,7 @@ use sdf_vecs::{Vec3, VecType, ops::add_high};
 
 use crate::{Operator, Spatial, VariableContainer};
 
+#[derive(Clone)]
 pub(crate)struct Add<L, R> where L: Spatial, R: Spatial{
     pub(crate) lhs: L,
     pub(crate) rhs: R

@@ -2,6 +2,7 @@ use sdf_vecs::{VecType, ops::sub_high};
 
 use crate::{Operator, Spatial, VariableContainer};
 
+#[derive(Clone)]
 pub(crate) struct Sub<L, R> 
 where L: Spatial, R: Spatial 
 {

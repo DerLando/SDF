@@ -2,6 +2,7 @@ use sdf_vecs::{VecType, ops::Abs as AbsTrait};
 
 use crate::{Operator, Spatial, VariableContainer};
 
+#[derive(Clone)]
 pub(crate) struct Abs<S: Spatial>(pub(crate) S);
 
 impl<S> Spatial for Abs<S> where S: Spatial { }

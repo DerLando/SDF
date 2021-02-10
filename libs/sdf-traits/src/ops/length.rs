@@ -2,6 +2,7 @@ use sdf_vecs::{Vec1, Vec3, VecType, ops::Length as lengthTrait};
 
 use crate::{Operator, Spatial, VariableContainer};
 
+#[derive(Clone)]
 pub(crate) struct Length<S: Spatial>(pub(crate) S);
 
 impl<S> Spatial for Length<S> where S: Spatial { }

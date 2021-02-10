@@ -2,6 +2,7 @@ use sdf_vecs::{ComponentAccess, Vec1, VecType};
 
 use crate::{Operator, Spatial, VariableContainer};
 
+#[derive(Clone)]
 pub(crate) struct X<S: Spatial>(pub(crate) S);
 
 impl<S> Spatial for X<S> where S: Spatial {}
@@ -18,6 +19,7 @@ impl<S> VariableContainer for X<S> where S: Spatial {
     }
 }
 
+#[derive(Clone)]
 pub(crate) struct Y<S: Spatial>(pub(crate) S);
 
 impl<S> Spatial for Y<S> where S: Spatial {}
@@ -34,6 +36,7 @@ impl<S> VariableContainer for Y<S> where S: Spatial {
     }
 }
 
+#[derive(Clone)]
 pub(crate) struct Z<S: Spatial>(pub(crate) S);
 
 impl<S> Spatial for Z<S> where S: Spatial {}
@@ -50,6 +53,7 @@ impl<S> VariableContainer for Z<S> where S: Spatial {
     }
 }
 
+#[derive(Clone)]
 pub(crate) struct W<S: Spatial>(pub(crate) S);
 
 impl<S> Spatial for W<S> where S: Spatial {}

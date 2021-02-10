@@ -2,6 +2,7 @@ use sdf_vecs::{Vec3, VecType};
 
 use crate::{Operator, Spatial, VariableContainer};
 
+#[derive(Clone)]
 pub(crate) struct Neg<S: Spatial>(pub(crate) S);
 
 impl<S> Spatial for Neg<S> where S: Spatial { }

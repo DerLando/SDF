@@ -5,6 +5,9 @@ mod length;
 mod sub;
 mod swizzle;
 mod abs;
+mod max;
+mod min;
+mod max_comp;
 
 pub(crate) use self::noop::NoOp;
 pub(crate) use self::add::Add;
@@ -13,3 +16,6 @@ pub(crate) use self::length::Length;
 pub(crate) use self::sub::Sub;
 pub(crate) use self::swizzle::{X, Y, Z, W};
 pub(crate) use self::abs::Abs;
+pub(crate) use self::max::Max;
+pub(crate) use self::min::Min;
+pub(crate) use self::max_comp::MaxComp;

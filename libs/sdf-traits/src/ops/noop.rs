@@ -2,11 +2,13 @@ use sdf_vecs::{Vec3, VecType};
 
 use crate::{Operator, Spatial, VariableContainer};
 
+#[derive(Clone)]
 pub(crate) enum Variable {
     Const(VecType),
     Replaceable(Vec3)
 }
 
+#[derive(Clone)]
 pub(crate) struct NoOp(pub(crate) Variable);
 
 impl Spatial for NoOp {}
