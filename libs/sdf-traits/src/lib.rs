@@ -2,6 +2,7 @@ use sdf_vecs::{Vec3, VecType};
 
 mod ops;
 mod sdf;
+mod primitives;
 
 pub use sdf::TraitSDF;
 
