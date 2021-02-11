@@ -7,8 +7,13 @@ pub trait SwizzleDim {
 pub trait SwizzleDim2: SwizzleDim {
     fn xx(&self) -> Self::Output;
     fn xy(&self) -> Self::Output;
+    fn xz(&self) -> Self::Output;
     fn yx(&self) -> Self::Output;
     fn yy(&self) -> Self::Output;
+    fn yz(&self) -> Self::Output;
+    fn zx(&self) -> Self::Output;
+    fn zy(&self) -> Self::Output;
+    fn zz(&self) -> Self::Output;
 }
 
 impl SwizzleDim for Vec2 {
@@ -30,6 +35,26 @@ impl SwizzleDim2 for Vec2 {
 
     fn yy(&self) -> Self::Output {
         Self::new(self.y(), self.y())
+    }
+
+    fn xz(&self) -> Self::Output {
+        Self::new(self.x(), self.z())
+    }
+
+    fn yz(&self) -> Self::Output {
+        Self::new(self.y(), self.z())
+    }
+
+    fn zx(&self) -> Self::Output {
+        Self::new(self.z(), self.x())
+    }
+
+    fn zy(&self) -> Self::Output {
+        Self::new(self.z(), self.y())
+    }
+
+    fn zz(&self) -> Self::Output {
+        Self::new(self.z(), self.z())
     }
 }
 
@@ -197,6 +222,26 @@ impl SwizzleDim2 for VecType {
 
     fn yy(&self) -> Self::Output {
         self.scale2().yy().into()
+    }
+
+    fn xz(&self) -> Self::Output {
+        self.scale2().xz().into()
+    }
+
+    fn yz(&self) -> Self::Output {
+        self.scale2().yz().into()
+    }
+
+    fn zx(&self) -> Self::Output {
+        self.scale2().zx().into()
+    }
+
+    fn zy(&self) -> Self::Output {
+        self.scale2().zy().into()
+    }
+
+    fn zz(&self) -> Self::Output {
+        self.scale2().zz().into()
     }
 }
 

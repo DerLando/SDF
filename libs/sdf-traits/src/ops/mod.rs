@@ -84,7 +84,7 @@ pub(crate) use self::add::add;
 pub(crate) use self::neg::neg;
 pub(crate) use self::length::length;
 pub(crate) use self::sub::sub;
-pub(crate) use self::swizzle::{X, Y, Z, W, XX, XY, YY, YX, x, y, xx, xy, yy, yx};
+pub(crate) use self::swizzle::{x, y, xx, xy, xz, yx, yy, yz, zx, zy, zz};
 pub(crate) use self::abs::{Abs, abs};
 pub(crate) use self::max::max;
 pub(crate) use self::min::min;

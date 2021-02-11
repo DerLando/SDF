@@ -50,6 +50,14 @@ impl Operator for XY {
     }
 }
 
+impl_unary_op!(XZ, xz);
+
+impl Operator for XZ {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).xz().into()
+    }
+}
+
 impl_unary_op!(YY, yy);
 
 impl Operator for YY {
@@ -63,5 +71,37 @@ impl_unary_op!(YX, yx);
 impl Operator for YX {
     fn operate(&self, pos: &Vec3) -> VecType {
         self.0.operate(pos).yx().into()
+    }
+}
+
+impl_unary_op!(YZ, yz);
+
+impl Operator for YZ {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).yz().into()
+    }
+}
+
+impl_unary_op!(ZX, zx);
+
+impl Operator for ZX {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).zx().into()
+    }
+}
+
+impl_unary_op!(ZY, zy);
+
+impl Operator for ZY {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).zy().into()
+    }
+}
+
+impl_unary_op!(ZZ, zz);
+
+impl Operator for ZZ {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).zz().into()
     }
 }
