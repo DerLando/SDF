@@ -2,17 +2,15 @@ use std::ops::{Deref, DerefMut};
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{max, length, min, NoOp, sub, add, mul}, primitives::{box_2d, box_3d, circle}};
+use crate::{Spatial, ops::{max, length, min, Constant, sub, add, mul}, primitives::{box_2d, box_3d, circle}};
 
 #[derive(Clone)]
 pub struct TraitSDF;
 
 impl TraitSDF {
-    pub fn sign_at(sdf: &mut impl Spatial, position: &Vec3) -> f32 {
-        sdf.replace_variable(position);
-
+    pub fn sign_at(sdf: &impl Spatial, position: &Vec3) -> f32 {
         // operate the whole tree and return
-        match sdf.operate() {
+        match sdf.operate(position) {
             VecType::Vec1(v) => v.x(),
             _ => unreachable!()
         }
@@ -45,8 +43,8 @@ impl TraitSDF {
         // a is blend factor, L is left tree and R is right tree
         // d = (1 - a) * L + a * R
 
-        let factor: NoOp = factor.into();
-        let one: NoOp = 1.0.into();
+        let factor: Constant = factor.into();
+        let one: Constant = 1.0.into();
 
         let lhs = mul(sub(one, factor.clone()), a);
         let rhs = mul(factor, b);
@@ -55,7 +53,7 @@ impl TraitSDF {
     }
 
     pub fn rounded_edges(sdf: impl Spatial + 'static, radius: f32) -> impl Spatial {
-        let r: NoOp = radius.into();
+        let r: Constant = radius.into();
         sub(sdf, r)
     }
 }

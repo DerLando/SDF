@@ -14,12 +14,12 @@ pub trait VariableContainer {
 }
 
 /// The basic operator trait all operators have to implement
-pub trait Operator<T> {
-    fn operate(&self) -> T;
+pub trait Operator {
+    fn operate(&self, pos: &Vec3) -> VecType;
 }
 
 /// Operators that always return a [`VecType`].
 /// This marker trait is stored in all Ops as a Trait object
-pub trait Spatial: Operator<VecType> + VariableContainer + DynClone { }
+pub trait Spatial: Operator + DynClone { }
 
 dyn_clone::clone_trait_object!(Spatial);

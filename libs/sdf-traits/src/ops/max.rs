@@ -4,8 +4,8 @@ use crate::{Operator, Spatial, VariableContainer, };
 
 impl_binary_op!(Max, max);
 
-impl Operator<VecType> for Max {
-    fn operate(&self) -> VecType {
-        max_high(&self.lhs.operate(), &self.rhs.operate())
+impl Operator for Max {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        max_high(&self.lhs.operate(pos), &self.rhs.operate(pos))
     }
 }

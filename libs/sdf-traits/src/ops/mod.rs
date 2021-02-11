@@ -18,12 +18,6 @@ macro_rules! impl_unary_op {
 
         impl Spatial for $op_name { }
 
-        impl VariableContainer for $op_name {
-            fn replace_variable(&mut self, var: &Vec3) {
-                self.0.replace_variable(var)
-            }
-        }
-
         pub(crate)fn $fn_name(sdf: impl Spatial + 'static) -> $op_name {
             $op_name::new(Box::new(sdf))
         }
@@ -64,20 +58,14 @@ macro_rules! impl_binary_op {
 
         impl Spatial for $op_name { }
 
-        impl VariableContainer for $op_name {
-            fn replace_variable(&mut self, var: &Vec3) {
-                self.lhs.replace_variable(var);
-                self.rhs.replace_variable(var)
-            }
-        }
-
         pub(crate)fn $fn_name(lhs: impl Spatial + 'static, rhs: impl Spatial + 'static) -> $op_name {
             $op_name::new(Box::new(lhs), Box::new(rhs))
         }
     };
 }
 
-mod noop;
+mod constant;
+mod variable;
 mod add;
 mod neg;
 mod length;
@@ -90,7 +78,8 @@ mod max_comp;
 mod mul;
 mod vecop;
 
-pub(crate) use self::noop::NoOp;
+pub(crate) use self::constant::Constant;
+pub(crate) use self::variable::Variable;
 pub(crate) use self::add::add;
 pub(crate) use self::neg::neg;
 pub(crate) use self::length::length;

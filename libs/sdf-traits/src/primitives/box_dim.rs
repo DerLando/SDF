@@ -1,6 +1,6 @@
 use sdf_vecs::{Vec1, Vec2, Vec3, VecType};
 
-use crate::{Spatial, ops::{abs, add, length, max, max_comp, min, NoOp, sub}};
+use crate::{Spatial, ops::{abs, add, length, max, max_comp, min, Constant, Variable, sub}};
 
 fn box_nd(dimensions: VecType) -> impl Spatial {
     // R is VecN(x, y, z, w)
@@ -10,10 +10,10 @@ fn box_nd(dimensions: VecType) -> impl Spatial {
     // q = abs(P) - R
     // d = length(max(q,0)) + min(max(q.x, q.y), 0)
 
-    let dim = NoOp::new_const(&dimensions);
-    let zero: NoOp = Vec1::new(0.0).into();
+    let dim = Constant(dimensions);
+    let zero: Constant = 0.0.into();
 
-    let q = sub(abs(NoOp::new_var()), dim);
+    let q = sub(abs(Variable), dim);
     let lhs = length(max(q.clone(), zero.clone()));
     let rhs = min(max_comp(q), zero);
 

@@ -54,3 +54,8 @@ While mutable access to the `SDF` is quite unflexible, it could only be circumve
 Since we are passing around trait objects, everything is *boxed* and stored on the heap. This probably won't be too nice for performance overall, we will need to benchmark this against other implementations.
 
 # TODO
+
+ - [x] allow sampling of `sdf` without mutable access, this involves multiple steps:
+   - [x] change the signature of the `operate` function to `operate(&self, pos: &Vec3)`
+   - [x] get rid of `VariableContainer` trait
+   - [x] implement a new Operator, `VarOp` which will evaluate to whatever variable given.

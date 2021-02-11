@@ -1,11 +1,11 @@
 use sdf_vecs::{VecType, ops::min_high, Vec3};
 
-use crate::{Operator, Spatial, VariableContainer};
+use crate::{Operator, Spatial};
 
 impl_binary_op!(Min, min);
 
-impl Operator<VecType> for Min {
-    fn operate(&self) -> VecType {
-        min_high(&self.lhs.operate(), &self.rhs.operate())
+impl Operator for Min {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        min_high(&self.lhs.operate(pos), &self.rhs.operate(pos))
     }
 }

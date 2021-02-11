@@ -4,64 +4,64 @@ use crate::{Operator, Spatial, VariableContainer, };
 
 impl_unary_op!(X, x);
 
-impl Operator<VecType> for X {
-    fn operate(&self) -> VecType {
-        Vec1::new(self.0.operate().x()).into()
+impl Operator for X {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        Vec1::new(self.0.operate(pos).x()).into()
     }
 }
 
 impl_unary_op!(Y, y);
 
-impl Operator<VecType> for Y {
-    fn operate(&self) -> VecType {
-        Vec1::new(self.0.operate().y()).into()
+impl Operator for Y {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        Vec1::new(self.0.operate(pos).y()).into()
     }
 }
 
 impl_unary_op!(Z, z);
 
-impl Operator<VecType> for Z {
-    fn operate(&self) -> VecType {
-        Vec1::new(self.0.operate().z()).into()
+impl Operator for Z {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        Vec1::new(self.0.operate(pos).z()).into()
     }
 }
 
 impl_unary_op!(W, w);
 
-impl Operator<VecType> for W {
-    fn operate(&self) -> VecType {
-        Vec1::new(self.0.operate().w()).into()
+impl Operator for W {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        Vec1::new(self.0.operate(pos).w()).into()
     }
 }
 
 impl_unary_op!(XX, xx);
 
-impl Operator<VecType> for XX {
-    fn operate(&self) -> VecType {
-        self.0.operate().xx().into()
+impl Operator for XX {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).xx().into()
     }
 }
 
 impl_unary_op!(XY, xy);
 
-impl Operator<VecType> for XY {
-    fn operate(&self) -> VecType {
-        self.0.operate().xy().into()
+impl Operator for XY {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).xy().into()
     }
 }
 
 impl_unary_op!(YY, yy);
 
-impl Operator<VecType> for YY {
-    fn operate(&self) -> VecType {
-        self.0.operate().yy().into()
+impl Operator for YY {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).yy().into()
     }
 }
 
 impl_unary_op!(YX, yx);
 
-impl Operator<VecType> for YX {
-    fn operate(&self) -> VecType {
-        self.0.operate().yx().into()
+impl Operator for YX {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.0.operate(pos).yx().into()
     }
 }

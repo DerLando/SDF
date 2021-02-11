@@ -1,11 +1,11 @@
-use sdf_vecs::{Vec1, Vec3, VecType};
+use sdf_vecs::{Vec3};
 
-use crate::{Spatial, TraitSDF, ops::{add, length, neg, sub, NoOp,}};
+use crate::{Spatial, ops::{length, sub, Constant, Variable,}};
 
 pub(crate) fn circle(center: &Vec3, radius: f32) -> impl Spatial {
     // length(P-C)-r, where P is query point, C is Center vec and r is radius
-    let center: NoOp = (*center).into();
-    let radius: NoOp = radius.into();
+    let center: Constant = (*center).into();
+    let radius: Constant = radius.into();
 
-    sub(length(sub(NoOp::new_var(), center)), radius)
+    sub(length(sub(Variable, center)), radius)
 }
