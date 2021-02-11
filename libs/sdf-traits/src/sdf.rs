@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{max, length, min, Constant, sub, add, mul}, primitives::{box_2d, box_3d, circle}};
+use crate::{Spatial, ops::{max, length, min, Constant, sub, add, mul}, primitives::{box_2d, box_3d, circle, torus}};
 
 #[derive(Clone)]
 pub struct TraitSDF;
@@ -55,6 +55,10 @@ impl TraitSDF {
     pub fn rounded_edges(sdf: impl Spatial + 'static, radius: f32) -> impl Spatial {
         let r: Constant = radius.into();
         sub(sdf, r)
+    }
+
+    pub fn torus(inner_radius: f32, outer_radius: f32) -> impl Spatial {
+        torus(inner_radius, outer_radius)
     }
 }
 
