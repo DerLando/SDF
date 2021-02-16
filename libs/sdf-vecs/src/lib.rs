@@ -12,6 +12,7 @@ trait ComponentDimensionVec: component_access::ComponentAccess + Dimension {}
 pub use self::{vec_type::VecType,
     component_access::ComponentAccess, swizzle::{SwizzleDim, SwizzleDim2, SwizzleDim3}
 };
+pub use glam::Vec3;
 
 #[cfg(test)]
 mod tests {

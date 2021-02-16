@@ -1,18 +1,21 @@
 use std::ops::{Deref, DerefMut};
 
-use glam::Vec3;
-use sdf_vecs::{ComponentAccess, VecType};
+use sdf_vecs::{ComponentAccess, VecType, Vec3};
 
-use crate::{Operator, Spatial, csg::{difference, intersection, union, union_smooth}, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}};
+use crate::{Operator, Spatial, csg::{difference, intersection, union, union_smooth}, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}, transform::{Transform, TransformHelper}};
 
 #[derive(Clone)]
 pub struct SDFTree {
-    pub(crate) root: Box<dyn Spatial>
+    pub(crate) root: Box<dyn Spatial>,
+    pub(crate) transform: Transform
 }
 
 impl Operator for SDFTree {
     fn operate(&self, pos: &Vec3) -> VecType {
-        self.root.operate(pos)
+        // apply transformation to position
+        let p = self.transform.transform_point3(*pos);
+        
+        self.root.operate(&p)
     }
 }
 
@@ -21,7 +24,8 @@ impl Spatial for SDFTree {}
 impl SDFTree {
     pub(crate) fn new(sdf: impl Spatial + 'static) -> Self {
         Self {
-            root: Box::new(sdf)
+            root: Box::new(sdf),
+            transform: Transform::identity()
         }
     }
 
@@ -37,6 +41,10 @@ impl SDFTree {
 
 /// Primitives
 impl SDFTree {
+    pub fn point() -> Self {
+        Self::new(length(Variable))
+    }
+
     pub fn circle(center: &Vec3, radius: f32) -> Self {
         // length(P-C)-r, where P is query point, C is Center vec and r is radius
         Self::new(circle(center, radius))
@@ -77,6 +85,14 @@ impl SDFTree {
 
     pub fn union_smooth(a: SDFTree, b: SDFTree, k: f32) -> Self {
         union_smooth(a, b, k)
+    }
+}
+
+/// Transforms
+impl SDFTree {
+    pub fn translate(&mut self, v: &Vec3) {
+        // apply inverse of translation AFTER the original transformation
+        self.transform = TransformHelper::translation(v).inverse() * self.transform;
     }
 }
 

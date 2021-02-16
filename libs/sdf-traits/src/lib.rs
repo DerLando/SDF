@@ -8,6 +8,7 @@ mod ops;
 mod sdf;
 mod primitives;
 mod csg;
+mod transform;
 
 pub use sdf::SDFTree;
 
