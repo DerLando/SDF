@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use sdf_vecs::{ComponentAccess, VecType, Vec3};
 
-use crate::{Operator, Spatial, csg::{difference, intersection, union, union_smooth}, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}, transform::{Transform, TransformHelper}};
+use crate::{Operator, Spatial, csg::{difference, intersection, union, union_smooth}, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}, transform::{RotationAxis, Transform, TransformHelper}};
 
 #[derive(Clone)]
 pub struct SDFTree {
@@ -93,6 +93,10 @@ impl SDFTree {
     pub fn translate(&mut self, v: &Vec3) {
         // apply inverse of translation AFTER the original transformation
         self.transform = TransformHelper::translation(v).inverse() * self.transform;
+    }
+
+    pub fn rotate(&mut self, angle: f32, axis: RotationAxis) {
+        self.transform = TransformHelper::rotate(angle, axis).inverse() * self.transform;
     }
 }
 

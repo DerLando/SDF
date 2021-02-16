@@ -10,7 +10,7 @@ mod primitives;
 mod csg;
 mod transform;
 
-pub use sdf::SDFTree;
+pub use {sdf::SDFTree, transform::RotationAxis};
 
 pub trait VariableContainer {
     fn replace_variable(&mut self, var: &Vec3);
