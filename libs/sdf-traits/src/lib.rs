@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 #[macro_use]
 
 use dyn_clone::DynClone;
@@ -26,3 +28,11 @@ pub trait Operator {
 pub trait Spatial: Operator + DynClone { }
 
 dyn_clone::clone_trait_object!(Spatial);
+
+impl Operator for Box<dyn Spatial> {
+    fn operate(&self, pos: &Vec3) -> VecType {
+        self.deref().operate(pos)
+    }
+}
+
+impl Spatial for Box<dyn Spatial> {}

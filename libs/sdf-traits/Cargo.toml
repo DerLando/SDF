@@ -17,3 +17,7 @@ criterion = "0.3"
 [[bench]]
 name = "circle_trait_benchmark"
 harness = false
+
+[[bench]]
+name = "sphere_scale_benchmark"
+harness = false

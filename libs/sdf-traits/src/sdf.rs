@@ -7,15 +7,27 @@ use crate::{Operator, Spatial, csg::{difference, intersection, union, union_smoo
 #[derive(Clone)]
 pub struct SDFTree {
     pub(crate) root: Box<dyn Spatial>,
-    pub(crate) transform: Transform
+    transform: Transform,
+    scale_fac: f32
 }
 
 impl Operator for SDFTree {
     fn operate(&self, pos: &Vec3) -> VecType {
+        let mut p: Vec3 = *pos;
+
+        // test if we need to compress space
+        let need_compress = self.scale_fac != 1.0;
+        if need_compress {p = p / self.scale_fac};
+
         // apply transformation to position
-        let p = self.transform.transform_point3(*pos);
+        p = self.transform.transform_point3(p);
         
-        self.root.operate(&p)
+        // dillute space afterwards
+        if need_compress {
+            let s: Constant = self.scale_fac.into();
+            mul(self.root.clone(), s).operate(&p)
+        }
+        else {self.root.operate(&p)}
     }
 }
 
@@ -25,7 +37,8 @@ impl SDFTree {
     pub(crate) fn new(sdf: impl Spatial + 'static) -> Self {
         Self {
             root: Box::new(sdf),
-            transform: Transform::identity()
+            transform: Transform::identity(),
+            scale_fac: 1.0
         }
     }
 
@@ -97,6 +110,10 @@ impl SDFTree {
 
     pub fn rotate(&mut self, angle: f32, axis: RotationAxis) {
         self.transform = TransformHelper::rotate(angle, axis).inverse() * self.transform;
+    }
+
+    pub fn scale(&mut self, scale_factor: f32) {
+        self.scale_fac *= scale_factor;
     }
 }
 
