@@ -77,6 +77,7 @@ mod min;
 mod max_comp;
 mod mul;
 mod vecop;
+mod clamp;
 
 pub(crate) use self::constant::Constant;
 pub(crate) use self::variable::Variable;

@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{max, length, min, Constant, sub, add, mul}, primitives::{box_2d, box_3d, circle, torus}};
+use crate::{Spatial, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}};
 
 #[derive(Clone)]
 pub struct TraitSDF;
@@ -20,6 +20,11 @@ impl TraitSDF {
     pub fn circle(center: &Vec3, radius: f32) -> impl Spatial {
         // length(P-C)-r, where P is query point, C is Center vec and r is radius
         circle(center, radius)
+    }
+
+    pub fn sphere(radius: f32) -> impl Spatial {
+        let r: Constant = radius.into();
+        sub(length(Variable), r)
     }
 
     /// Create a rectangle centered at (0, 0), with max extents of x and y
