@@ -1,7 +1,3 @@
-use std::ops::Deref;
-
-use crate::{Spatial, VariableContainer};
-
 /// Implement the boilerplate for an unary operator (single argument).
 /// You will still need to impl Operator<VecType> to satify the Spatial impl.
 macro_rules! impl_unary_op {
@@ -24,19 +20,6 @@ macro_rules! impl_unary_op {
     };  
 
 }
-
-macro_rules! create_dsl_unary {
-    ($op_name:ident) => {
-        macro_rules! $op_name {
-            ($sdf:expr) => {
-                {
-                    $op_name::new(Box::new($sdf))
-                }
-            }
-        }
-    };
-}
-
 
 macro_rules! impl_binary_op {
     ($op_name:ident, $fn_name:ident) => {

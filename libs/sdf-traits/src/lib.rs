@@ -1,7 +1,4 @@
 use std::ops::Deref;
-
-#[macro_use]
-
 use dyn_clone::DynClone;
 use glam::Vec3;
 use sdf_vecs::{VecType};

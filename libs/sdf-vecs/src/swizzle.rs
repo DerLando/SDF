@@ -1,4 +1,4 @@
-use crate::{Dimension, VecType, component_access::ComponentAccess, scale::Scale};
+use crate::{Dimension, VecType, scale::Scale};
 use glam::{Vec2, Vec2Swizzles, Vec3, Vec3Swizzles, Vec4, Vec4Swizzles};
 
 impl Dimension for Vec2 {

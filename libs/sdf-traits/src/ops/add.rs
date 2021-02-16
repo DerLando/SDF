@@ -1,7 +1,7 @@
 use glam::Vec3;
 use sdf_vecs::{VecType, ops::add_high};
 
-use crate::{Operator, Spatial, VariableContainer, };
+use crate::{Operator, Spatial};
 
 impl_binary_op!(Add, add);
 

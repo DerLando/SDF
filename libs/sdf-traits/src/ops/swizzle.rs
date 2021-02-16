@@ -1,7 +1,7 @@
 use glam::Vec3;
 use sdf_vecs::{ComponentAccess, SwizzleDim2, VecType};
 
-use crate::{Operator, Spatial, VariableContainer, };
+use crate::{Operator, Spatial};
 
 impl_unary_op!(X, x);
 

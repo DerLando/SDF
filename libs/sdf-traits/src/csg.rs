@@ -1,4 +1,4 @@
-use crate::{SDFTree, Spatial, ops::{Constant, max, min, neg, sub, abs, div, mul}};
+use crate::{SDFTree, ops::{Constant, max, min, neg, sub, abs, div, mul}};
 
 pub(crate) fn union(a: SDFTree, b: SDFTree) -> SDFTree {
     SDFTree::new(min(a, b))

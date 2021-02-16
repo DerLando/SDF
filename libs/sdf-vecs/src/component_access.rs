@@ -1,5 +1,3 @@
-use glam::{Vec2, Vec3, Vec4};
-
 use crate::VecType;
 
 /// Access components (e.g.: x, y, z, w) of an Vec.
@@ -10,60 +8,6 @@ pub trait ComponentAccess {
     fn z(&self) -> f32;
     fn w(&self) -> f32;
 }
-
-// impl ComponentAccess for Vec2 {
-//     fn x(&self) -> f32 {
-//         self.x
-//     }
-
-//     fn y(&self) -> f32 {
-//         self.y
-//     }
-
-//     fn z(&self) -> f32 {
-//         self.x
-//     }
-
-//     fn w(&self) -> f32 {
-//         self.y
-//     }
-// }
-
-// impl ComponentAccess for Vec3 {
-//     fn x(&self) -> f32 {
-//         self.x
-//     }
-
-//     fn y(&self) -> f32 {
-//         self.y
-//     }
-
-//     fn z(&self) -> f32 {
-//         self.z
-//     }
-
-//     fn w(&self) -> f32 {
-//         self.x
-//     }
-// }
-
-// impl ComponentAccess for Vec4 {
-//     fn x(&self) -> f32 {
-//         self.x
-//     }
-
-//     fn y(&self) -> f32 {
-//         self.y
-//     }
-
-//     fn z(&self) -> f32 {
-//         self.z
-//     }
-
-//     fn w(&self) -> f32 {
-//         self.w
-//     }
-// }
 
 impl ComponentAccess for VecType {
     fn x(&self) -> f32 {

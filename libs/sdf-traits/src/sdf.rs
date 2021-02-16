@@ -1,6 +1,4 @@
-use std::ops::{Deref, DerefMut};
-
-use sdf_vecs::{ComponentAccess, VecType, Vec3};
+use sdf_vecs::{VecType, Vec3};
 
 use crate::{Operator, Spatial, csg::{difference, intersection, union, union_smooth}, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}, transform::{RotationAxis, Transform, TransformHelper}};
 

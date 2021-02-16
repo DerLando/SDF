@@ -1,9 +1,6 @@
 use glam::Vec3;
 use sdf_vecs::{VecType, ops::Abs as AbsTrait};
-
 use crate::{Operator, Spatial};
-
-use super::*;
 
 impl_unary_op!(Abs, abs);
 
