@@ -1,4 +1,4 @@
-use crate::{ComponentAccess, Vec1, Vec2, Vec3, Vec4, VecType, scale::Scale};
+use crate::{VecType, scale::Scale};
 
 use super::{OperatorKind, scale_same};
 
@@ -6,43 +6,14 @@ trait Max<T> {
     fn max(&self, other: &T) -> Self;
 }
 
-impl Max<Vec1> for Vec1 {
-    fn max(&self, other: &Vec1) -> Self {
-        Vec1::new(self.x().max(other.x()))
-    }
-}
-
-impl Max<Vec2> for Vec2 {
-    fn max(&self, other: &Vec2) -> Self {
-        Vec2::new(self.x().max(other.x()), self.y().max(other.y()))
-    }
-}
-
-impl Max<Vec3> for Vec3 {
-    fn max(&self, other: &Vec3) -> Self {
-        Vec3::new(self.x().max(other.x()), self.y().max(other.y()), self.z().max(other.z()))
-    }
-}
-
-impl Max<Vec4> for Vec4 {
-    fn max(&self, other: &Vec4) -> Self {
-        Vec4::new(
-            self.x().max(other.x()),
-            self.y().max(other.y()),
-            self.z().max(other.z()),
-            self.w().max(other.w())
-        )
-    }
-}
-
 fn max(a: &VecType, b: &VecType, kind: OperatorKind) -> VecType {
     let (dim, lhs, rhs) = scale_same(a, b, kind);
 
     match dim {
-        1 => VecType::Vec1(lhs.scale1().max(&rhs.scale1())),
-        2 => VecType::Vec2(lhs.scale2().max(&rhs.scale2())),
-        3 => VecType::Vec3(lhs.scale3().max(&rhs.scale3())),
-        4 => VecType::Vec4(lhs.scale4().max(&rhs.scale4())),
+        1 => VecType::Scalar(lhs.scale1().max(rhs.scale1())),
+        2 => VecType::Vec2(lhs.scale2().max(rhs.scale2())),
+        3 => VecType::Vec3(lhs.scale3().max(rhs.scale3())),
+        4 => VecType::Vec4(lhs.scale4().max(rhs.scale4())),
         _ => unreachable!()
     }
 }
@@ -59,37 +30,13 @@ pub trait MaxComp {
     fn max_comp(&self) -> f32;
 }
 
-impl MaxComp for Vec1 {
-    fn max_comp(&self) -> f32 {
-        self.x()
-    }
-}
-
-impl MaxComp for Vec2 {
-    fn max_comp(&self) -> f32 {
-        self.x().max(self.y())
-    }
-}
-
-impl MaxComp for Vec3 {
-    fn max_comp(&self) -> f32 {
-        self.x().max(self.y().max(self.z()))
-    }
-}
-
-impl MaxComp for Vec4 {
-    fn max_comp(&self) -> f32 {
-        self.x().max(self.y().max(self.z().max(self.w())))
-    }
-}
-
 impl MaxComp for VecType {
     fn max_comp(&self) -> f32 {
         match self {
-            VecType::Vec1(v) => v.max_comp(),
-            VecType::Vec2(v) => v.max_comp(),
-            VecType::Vec3(v) => v.max_comp(),
-            VecType::Vec4(v) => v.max_comp(),
+            VecType::Scalar(s) => *s,
+            VecType::Vec2(v) => v.max_element(),
+            VecType::Vec3(v) => v.max_element(),
+            VecType::Vec4(v) => v.max_element(),
         }
     }
 }

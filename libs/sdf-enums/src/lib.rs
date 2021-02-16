@@ -1,4 +1,4 @@
-use sdf_vecs::{Vec3, Vec1, VecType, ops::{Length, add_high}, ComponentAccess};
+use sdf_vecs::{VecType, ops::{Length, add_high}, ComponentAccess};
 
 
 /// a constant vec, a replacable vec, or something that evaluates to a vec

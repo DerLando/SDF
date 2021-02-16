@@ -1,4 +1,23 @@
-use crate::{Dimension, VecType, component_access::ComponentAccess, scale::Scale, vec_2::Vec2, vec_3::Vec3};
+use crate::{Dimension, VecType, component_access::ComponentAccess, scale::Scale};
+use glam::{Vec2, Vec2Swizzles, Vec3, Vec3Swizzles, Vec4, Vec4Swizzles};
+
+impl Dimension for Vec2 {
+    fn dimension(&self) -> u8 {
+        2
+    }
+}
+
+impl Dimension for Vec3 {
+    fn dimension(&self) -> u8 {
+        3
+    }
+}
+
+impl Dimension for Vec4 {
+    fn dimension(&self) -> u8 {
+        4
+    }
+}
 
 pub trait SwizzleDim {
     type Output: Dimension;
@@ -7,13 +26,8 @@ pub trait SwizzleDim {
 pub trait SwizzleDim2: SwizzleDim {
     fn xx(&self) -> Self::Output;
     fn xy(&self) -> Self::Output;
-    fn xz(&self) -> Self::Output;
     fn yx(&self) -> Self::Output;
     fn yy(&self) -> Self::Output;
-    fn yz(&self) -> Self::Output;
-    fn zx(&self) -> Self::Output;
-    fn zy(&self) -> Self::Output;
-    fn zz(&self) -> Self::Output;
 }
 
 impl SwizzleDim for Vec2 {
@@ -22,39 +36,19 @@ impl SwizzleDim for Vec2 {
 
 impl SwizzleDim2 for Vec2 {
     fn xx(&self) -> Self::Output {
-        Self::new(self.x(), self.x())
+        Self::new(self.x, self.x)
     }
 
     fn xy(&self) -> Self::Output {
-        Self::new(self.x(), self.y())
+        Self::new(self.x, self.y)
     }
 
     fn yx(&self) -> Self::Output {
-        Self::new(self.y(), self.x())
+        Self::new(self.y, self.x)
     }
 
     fn yy(&self) -> Self::Output {
-        Self::new(self.y(), self.y())
-    }
-
-    fn xz(&self) -> Self::Output {
-        Self::new(self.x(), self.z())
-    }
-
-    fn yz(&self) -> Self::Output {
-        Self::new(self.y(), self.z())
-    }
-
-    fn zx(&self) -> Self::Output {
-        Self::new(self.z(), self.x())
-    }
-
-    fn zy(&self) -> Self::Output {
-        Self::new(self.z(), self.y())
-    }
-
-    fn zz(&self) -> Self::Output {
-        Self::new(self.z(), self.z())
+        Self::new(self.y, self.y)
     }
 }
 
@@ -94,111 +88,111 @@ impl SwizzleDim for Vec3 {
 
 impl SwizzleDim3 for Vec3 {
     fn xxx(&self) -> Self::Output {
-        Self::new(self.x(), self.x(), self.x())
+        Self::new(self.x, self.x, self.x)
     }
 
     fn xxy(&self) -> Self::Output {
-        Self::new(self.x(), self.x(), self.y())
+        Self::new(self.x, self.x, self.y)
     }
 
     fn xxz(&self) -> Self::Output {
-        Self::new(self.x(), self.x(), self.z())
+        Self::new(self.x, self.x, self.z)
     }
 
     fn xyx(&self) -> Self::Output {
-        Self::new(self.x(), self.y(), self.x())
+        Self::new(self.x, self.y, self.x)
     }
 
     fn xzx(&self) -> Self::Output {
-        Self::new(self.x(), self.z(), self.x())
+        Self::new(self.x, self.z, self.x)
     }
 
     fn yxx(&self) -> Self::Output {
-        Self::new(self.y(), self.x(), self.x())
+        Self::new(self.y, self.x, self.x)
     }
 
     fn zxx(&self) -> Self::Output {
-        Self::new(self.z(), self.x(), self.x())
+        Self::new(self.z, self.x, self.x)
     }
 
     fn yyy(&self) -> Self::Output {
-        Self::new(self.y(), self.y(), self.y())
+        Self::new(self.y, self.y, self.y)
     }
 
     fn yyx(&self) -> Self::Output {
-        Self::new(self.y(), self.y(), self.x())
+        Self::new(self.y, self.y, self.x)
     }
 
     fn yyz(&self) -> Self::Output {
-        Self::new(self.y(), self.y(), self.z())
+        Self::new(self.y, self.y, self.z)
     }
 
     fn yxy(&self) -> Self::Output {
-        Self::new(self.y(), self.x(), self.y())
+        Self::new(self.y, self.x, self.y)
     }
 
     fn yzy(&self) -> Self::Output {
-        Self::new(self.y(), self.z(), self.y())
+        Self::new(self.y, self.z, self.y)
     }
 
     fn xyy(&self) -> Self::Output {
-        Self::new(self.x(), self.y(), self.y())
+        Self::new(self.x, self.y, self.y)
     }
 
     fn zyy(&self) -> Self::Output {
-        Self::new(self.z(), self.y(), self.y())
+        Self::new(self.z, self.y, self.y)
     }
 
     fn zzz(&self) -> Self::Output {
-        Self::new(self.z(), self.z(), self.z())
+        Self::new(self.z, self.z, self.z)
     }
 
     fn zzx(&self) -> Self::Output {
-        Self::new(self.z(), self.z(), self.x())
+        Self::new(self.z, self.z, self.x)
     }
 
     fn zzy(&self) -> Self::Output {
-        Self::new(self.z(), self.z(), self.y())
+        Self::new(self.z, self.z, self.y)
     }
 
     fn zxz(&self) -> Self::Output {
-        Self::new(self.z(), self.x(), self.z())
+        Self::new(self.z, self.x, self.z)
     }
 
     fn zyz(&self) -> Self::Output {
-        Self::new(self.z(), self.y(), self.z())
+        Self::new(self.z, self.y, self.z)
     }
 
     fn xzz(&self) -> Self::Output {
-        Self::new(self.x(), self.z(), self.z())
+        Self::new(self.x, self.z, self.z)
     }
 
     fn yzz(&self) -> Self::Output {
-        Self::new(self.y(), self.z(), self.z())
+        Self::new(self.y, self.z, self.z)
     }
 
     fn xzy(&self) -> Self::Output {
-        Self::new(self.x(), self.z(), self.y())
+        Self::new(self.x, self.z, self.y)
     }
 
     fn xyz(&self) -> Self::Output {
-        Self::new(self.x(), self.y(), self.z())
+        Self::new(self.x, self.y, self.z)
     }
 
     fn yxz(&self) -> Self::Output {
-        Self::new(self.y(), self.x(), self.z())
+        Self::new(self.y, self.x, self.z)
     }
 
     fn yzx(&self) -> Self::Output {
-        Self::new(self.y(), self.z(), self.x())
+        Self::new(self.y, self.z, self.x)
     }
 
     fn zxy(&self) -> Self::Output {
-        Self::new(self.z(), self.x(), self.y())
+        Self::new(self.z, self.x, self.y)
     }
 
     fn zyx(&self) -> Self::Output {
-        Self::new(self.z(), self.y(), self.x())
+        Self::new(self.z, self.y, self.x)
     }
 }
 
@@ -222,26 +216,6 @@ impl SwizzleDim2 for VecType {
 
     fn yy(&self) -> Self::Output {
         self.scale2().yy().into()
-    }
-
-    fn xz(&self) -> Self::Output {
-        self.scale2().xz().into()
-    }
-
-    fn yz(&self) -> Self::Output {
-        self.scale2().yz().into()
-    }
-
-    fn zx(&self) -> Self::Output {
-        self.scale2().zx().into()
-    }
-
-    fn zy(&self) -> Self::Output {
-        self.scale2().zy().into()
-    }
-
-    fn zz(&self) -> Self::Output {
-        self.scale2().zz().into()
     }
 }
 

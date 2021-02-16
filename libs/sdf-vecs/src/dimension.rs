@@ -8,7 +8,7 @@ pub trait Dimension {
 impl Dimension for VecType {
     fn dimension(&self) -> u8 {
         match self {
-            VecType::Vec1(_) => 1,
+            VecType::Scalar(_) => 1,
             VecType::Vec2(_) => 2,
             VecType::Vec3(_) => 3,
             VecType::Vec4(_) => 4,

@@ -1,5 +1,6 @@
-use crate::{vec_1::Vec1, vec_2::Vec2, vec_3::Vec3, vec_4::Vec4, vec_type::VecType};
+use glam::{Vec2, Vec3, Vec4};
 
+use crate::VecType;
 
 /// Access components (e.g.: x, y, z, w) of an Vec.
 /// If components of lower dimensional vecs are accessed, they will internally wrap around.
@@ -10,112 +11,94 @@ pub trait ComponentAccess {
     fn w(&self) -> f32;
 }
 
-impl ComponentAccess for Vec1 {
-    fn x(&self) -> f32 {
-        self.components[0]
-    }
+// impl ComponentAccess for Vec2 {
+//     fn x(&self) -> f32 {
+//         self.x
+//     }
 
-    fn y(&self) -> f32 {
-        self.components[0]
-    }
+//     fn y(&self) -> f32 {
+//         self.y
+//     }
 
-    fn z(&self) -> f32 {
-        self.components[0]
-    }
+//     fn z(&self) -> f32 {
+//         self.x
+//     }
 
-    fn w(&self) -> f32 {
-        self.components[0]
-    }
-}
+//     fn w(&self) -> f32 {
+//         self.y
+//     }
+// }
 
-impl ComponentAccess for Vec2 {
-    fn x(&self) -> f32 {
-        self.components[0]
-    }
+// impl ComponentAccess for Vec3 {
+//     fn x(&self) -> f32 {
+//         self.x
+//     }
 
-    fn y(&self) -> f32 {
-        self.components[1]
-    }
+//     fn y(&self) -> f32 {
+//         self.y
+//     }
 
-    fn z(&self) -> f32 {
-        self.components[0]
-    }
+//     fn z(&self) -> f32 {
+//         self.z
+//     }
 
-    fn w(&self) -> f32 {
-        self.components[1]
-    }
-}
+//     fn w(&self) -> f32 {
+//         self.x
+//     }
+// }
 
-impl ComponentAccess for Vec3 {
-    fn x(&self) -> f32 {
-        self.components[0]
-    }
+// impl ComponentAccess for Vec4 {
+//     fn x(&self) -> f32 {
+//         self.x
+//     }
 
-    fn y(&self) -> f32 {
-        self.components[1]
-    }
+//     fn y(&self) -> f32 {
+//         self.y
+//     }
 
-    fn z(&self) -> f32 {
-        self.components[2]
-    }
+//     fn z(&self) -> f32 {
+//         self.z
+//     }
 
-    fn w(&self) -> f32 {
-        self.components[0]
-    }
-}
-
-impl ComponentAccess for Vec4 {
-    fn x(&self) -> f32 {
-        self.components[0]
-    }
-
-    fn y(&self) -> f32 {
-        self.components[1]
-    }
-
-    fn z(&self) -> f32 {
-        self.components[2]
-    }
-
-    fn w(&self) -> f32 {
-        self.components[3]
-    }
-}
+//     fn w(&self) -> f32 {
+//         self.w
+//     }
+// }
 
 impl ComponentAccess for VecType {
     fn x(&self) -> f32 {
         match self {
-            VecType::Vec1(v) => v.x(),
-            VecType::Vec2(v) => v.x(),
-            VecType::Vec3(v) => v.x(),
-            VecType::Vec4(v) => v.x(),
+            VecType::Scalar(s) => *s,
+            VecType::Vec2(v) => v.x,
+            VecType::Vec3(v) => v.x,
+            VecType::Vec4(v) => v.x,
         }
     }
 
     fn y(&self) -> f32 {
         match self {
-            VecType::Vec1(v) => v.y(),
-            VecType::Vec2(v) => v.y(),
-            VecType::Vec3(v) => v.y(),
-            VecType::Vec4(v) => v.y(),
+            VecType::Scalar(s) => *s,
+            VecType::Vec2(v) => v.y,
+            VecType::Vec3(v) => v.y,
+            VecType::Vec4(v) => v.y,
         }
     }
 
     fn z(&self) -> f32 {
         match self {
-            VecType::Vec1(v) => v.z(),
-            VecType::Vec2(v) => v.z(),
-            VecType::Vec3(v) => v.z(),
-            VecType::Vec4(v) => v.z(),
+            VecType::Scalar(s) => *s,
+            VecType::Vec2(v) => v.x, // wrap around
+            VecType::Vec3(v) => v.z,
+            VecType::Vec4(v) => v.z,
         }
     }
 
     fn w(&self) -> f32 {
         match self {
-            VecType::Vec1(v) => v.w(),
-            VecType::Vec2(v) => v.w(),
-            VecType::Vec3(v) => v.w(),
-            VecType::Vec4(v) => v.w(),
+            VecType::Scalar(s) => *s,
+            VecType::Vec2(v) => v.y,
+            VecType::Vec3(v) => v.x,
+            VecType::Vec4(v) => v.w,
         }
     }
 }

@@ -57,6 +57,8 @@ Since we are passing around trait objects, everything is *boxed* and stored on t
 
 While implementing `smooth_union` I recognized, that the current implementation makes it impossible to clone a `SDF` passed as a parameter `impl Spatial + 'static`. So we probably need to get back to a level of indirection where an `SDF` is explicitly wrapped inside of a `SDFTree` struct which implements clone. On the plus-side, with this approach we can overload operators and make library functions more readable / idiomatic.
 
+I'm thinking about how to best implement Transformations. For now the easiest and most flexible choice is probably to store a Transformation Matrix on each `SDFTree` instance, but I am not sure how this will work when blending / merging multiple `SDFTree`s. Also to implement transformations we will now need to bring in a linear algebra crate.
+
 # TODO
 
  - [x] allow sampling of `sdf` without mutable access, this involves multiple steps:
