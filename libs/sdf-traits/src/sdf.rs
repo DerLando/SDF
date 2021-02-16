@@ -16,18 +16,12 @@ impl Operator for SDFTree {
         let mut p: Vec3 = *pos;
 
         // test if we need to compress space
-        let need_compress = self.scale_fac != 1.0;
-        if need_compress {p = p / self.scale_fac};
+        if self.need_compress_space() {p = p / self.scale_fac};
 
         // apply transformation to position
         p = self.transform.transform_point3(p);
         
-        // dillute space afterwards
-        if need_compress {
-            let s: Constant = self.scale_fac.into();
-            mul(self.root.clone(), s).operate(&p)
-        }
-        else {self.root.operate(&p)}
+        self.root.operate(&p)
     }
 }
 
@@ -113,7 +107,16 @@ impl SDFTree {
     }
 
     pub fn scale(&mut self, scale_factor: f32) {
+        // update scale_fac
         self.scale_fac *= scale_factor;
+
+        // wrap root in mul op
+        let s: Constant = scale_factor.into();
+        self.root = Box::new(mul(self.root.clone(), s));
+    }
+
+    fn need_compress_space(&self) -> bool {
+        self.scale_fac != 1.0
     }
 }
 
