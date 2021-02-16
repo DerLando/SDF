@@ -76,6 +76,7 @@ mod max;
 mod min;
 mod max_comp;
 mod mul;
+mod div;
 mod vecop;
 mod clamp;
 
@@ -91,4 +92,5 @@ pub(crate) use self::max::max;
 pub(crate) use self::min::min;
 pub(crate) use self::max_comp::{MaxComp, max_comp};
 pub(crate) use self::mul::mul;
+pub(crate) use self::div::div;
 pub(crate) use self::vecop::vec2;

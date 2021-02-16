@@ -6,6 +6,7 @@ mod max;
 mod min;
 mod abs;
 mod mul;
+mod div;
 mod clamp;
 
 enum OperatorKind {
@@ -23,6 +24,7 @@ pub use min::{min_high, min_low};
 pub use abs::{Abs};
 pub use mul::{mul_high, mul_low};
 pub use clamp::{Clamp};
+pub use div::{div_high, div_low};
 
 use crate::{VecType, dimension::Dimension, scale::scale_n};
 

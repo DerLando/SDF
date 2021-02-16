@@ -6,6 +6,7 @@ use sdf_vecs::{Vec3, VecType};
 mod ops;
 mod sdf;
 mod primitives;
+mod csg;
 
 pub use sdf::TraitSDF;
 

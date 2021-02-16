@@ -2,21 +2,13 @@ use std::ops::{Deref, DerefMut};
 
 use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
 
-use crate::{Spatial, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}};
+use crate::{Spatial, csg::{difference, intersection, union}, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}};
 
 #[derive(Clone)]
 pub struct TraitSDF;
 
+/// Primitives
 impl TraitSDF {
-    pub fn sign_at(sdf: &impl Spatial, position: &Vec3) -> f32 {
-        // operate the whole tree and return
-        match sdf.operate(position) {
-            VecType::Vec1(v) => v.x(),
-            _ => unreachable!()
-        }
-
-    }
-
     pub fn circle(center: &Vec3, radius: f32) -> impl Spatial {
         // length(P-C)-r, where P is query point, C is Center vec and r is radius
         circle(center, radius)
@@ -36,12 +28,35 @@ impl TraitSDF {
         box_3d(x, y, z)
     }
 
+    pub fn torus(inner_radius: f32, outer_radius: f32) -> impl Spatial {
+        torus(inner_radius, outer_radius)
+    }
+}
+
+/// CSG
+impl TraitSDF {
     pub fn union(a: impl Spatial + 'static, b: impl Spatial + 'static) -> impl Spatial {
-        min(a, b)
+        union(a, b)
     }
 
     pub fn intersection(a: impl Spatial + 'static, b: impl Spatial + 'static) -> impl Spatial {
-        max(a, b)
+        intersection(a, b)
+    }
+
+    pub fn difference(a: impl Spatial + 'static, b: impl Spatial + 'static) -> impl Spatial {
+        difference(a, b)
+    }
+}
+
+/// General purpose
+impl TraitSDF {
+    pub fn sign_at(sdf: &impl Spatial, position: &Vec3) -> f32 {
+        // operate the whole tree and return
+        match sdf.operate(position) {
+            VecType::Vec1(v) => v.x(),
+            _ => unreachable!()
+        }
+
     }
 
     pub fn blend(a: impl Spatial + 'static, b: impl Spatial + 'static, factor: f32) -> impl Spatial {
@@ -62,9 +77,6 @@ impl TraitSDF {
         sub(sdf, r)
     }
 
-    pub fn torus(inner_radius: f32, outer_radius: f32) -> impl Spatial {
-        torus(inner_radius, outer_radius)
-    }
 }
 
 #[cfg(test)]

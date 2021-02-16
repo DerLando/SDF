@@ -53,6 +53,10 @@ While mutable access to the `SDF` is quite unflexible, it could only be circumve
 
 Since we are passing around trait objects, everything is *boxed* and stored on the heap. This probably won't be too nice for performance overall, we will need to benchmark this against other implementations.
 
+# Notes
+
+While implementing `smooth_union` I recognized, that the current implementation makes it impossible to clone a `SDF` passed as a parameter `impl Spatial + 'static`. So we probably need to get back to a level of indirection where an `SDF` is explicitly wrapped inside of a `SDFTree` struct which implements clone. On the plus-side, with this approach we can overload operators and make library functions more readable / idiomatic.
+
 # TODO
 
  - [x] allow sampling of `sdf` without mutable access, this involves multiple steps:
