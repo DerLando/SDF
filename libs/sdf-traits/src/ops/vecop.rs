@@ -1,4 +1,5 @@
-use sdf_vecs::{ComponentAccess, Vec2, Vec3, VecType};
+use glam::{Vec2, Vec3};
+use sdf_vecs::{ComponentAccess, VecType};
 
 use crate::{Operator, Spatial};
 

@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 sdf-vecs = { path = "../sdf-vecs" }
+glam = "0.12.0"
 
 [dev-dependencies]
 criterion = "0.3"

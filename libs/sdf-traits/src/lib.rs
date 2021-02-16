@@ -1,7 +1,8 @@
 #[macro_use]
 
 use dyn_clone::DynClone;
-use sdf_vecs::{Vec3, VecType};
+use glam::Vec3;
+use sdf_vecs::{VecType};
 
 mod ops;
 mod sdf;

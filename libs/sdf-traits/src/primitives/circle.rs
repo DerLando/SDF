@@ -1,4 +1,4 @@
-use sdf_vecs::{Vec3};
+use glam::Vec3;
 
 use crate::{Spatial, ops::{length, sub, Constant, Variable,}};
 

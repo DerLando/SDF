@@ -1,6 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
-use sdf_vecs::{ComponentAccess, Vec1, Vec3, VecType};
+use glam::Vec3;
+use sdf_vecs::{ComponentAccess, VecType};
 
 use crate::{Operator, Spatial, csg::{difference, intersection, union, union_smooth}, ops::{Constant, Variable, add, length, max, min, mul, sub}, primitives::{box_2d, box_3d, circle, torus}};
 
@@ -27,7 +28,7 @@ impl SDFTree {
     pub fn sign_at(&self, position: &Vec3) -> f32 {
         // operate the whole tree and return
         match self.operate(position) {
-            VecType::Vec1(v) => v.x(),
+            VecType::Scalar(s) => s,
             _ => unreachable!()
         }
 

@@ -1,3 +1,4 @@
+use glam::Vec3;
 use sdf_vecs::ops::Clamp as ClampTrait;
 
 use crate::{Operator, Spatial};
@@ -9,7 +10,7 @@ pub(crate) struct Clamp {
 }
 
 impl Operator for Clamp {
-    fn operate(&self, pos: &sdf_vecs::Vec3) -> sdf_vecs::VecType {
+    fn operate(&self, pos: &Vec3) -> sdf_vecs::VecType {
         self.value.operate(pos).clamp(self.min, self.max)
     }
 }

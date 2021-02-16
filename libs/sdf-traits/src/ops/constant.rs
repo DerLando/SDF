@@ -1,4 +1,5 @@
-use sdf_vecs::{Vec1, Vec2, Vec3, Vec4, VecType};
+use glam::{Vec2, Vec3, Vec4};
+use sdf_vecs::{VecType};
 
 use crate::{Operator, Spatial};
 
@@ -16,13 +17,7 @@ impl Operator for Constant {
 
 impl From<f32> for Constant {
     fn from(arg: f32) -> Self {
-        Self(VecType::Vec1(Vec1::new(arg)))
-    }
-}
-
-impl From<Vec1> for Constant {
-    fn from(arg: Vec1) -> Self {
-        Self(VecType::Vec1(arg))
+        Self(VecType::Scalar(arg))
     }
 }
 

@@ -1,7 +1,6 @@
 use std::ops::Deref;
 
 use crate::{Spatial, VariableContainer};
-use sdf_vecs::Vec3;
 
 /// Implement the boilerplate for an unary operator (single argument).
 /// You will still need to impl Operator<VecType> to satify the Spatial impl.

@@ -1,5 +1,5 @@
 use sdf_vecs::{VecType, ops::{Length, add_high}, ComponentAccess};
-
+use glam::{Vec3};
 
 /// a constant vec, a replacable vec, or something that evaluates to a vec
 enum Variable {
@@ -96,7 +96,7 @@ impl Operator for Operation {
             Operation::Neg(v) => -v.operate(),
             Operation::Add(vl, vr) => vl.operate() + vr.operate(),
             Operation::Cross(_, _) => unreachable!(),
-            Operation::Length(v) => Variable::Constant(Vec1::new(v.length()).into())
+            Operation::Length(v) => Variable::Constant(v.length().into())
         }
     }
 }
@@ -149,7 +149,7 @@ impl EnumSDF {
         let dist_from_center = Operation::Length(
             Variable::Operation(Box::new(center_var_sub))
         );
-        let radius_neg = Operation::Neg(Variable::Constant(Vec1::new(radius).into()));
+        let radius_neg = Operation::Neg(Variable::Constant(radius.into()));
         let radius_sub = Operation::Add(
             Variable::Operation(Box::new(dist_from_center)),
             Variable::Operation(Box::new(radius_neg))

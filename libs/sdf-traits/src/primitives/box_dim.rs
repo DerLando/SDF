@@ -1,4 +1,5 @@
-use sdf_vecs::{Vec1, Vec2, Vec3, VecType};
+use glam::{Vec2, Vec3};
+use sdf_vecs::{VecType};
 
 use crate::{Spatial, ops::{abs, add, length, max, max_comp, min, Constant, Variable, sub}};
 

@@ -1,4 +1,5 @@
-use sdf_vecs::{ComponentAccess, SwizzleDim2, Vec1, Vec2, Vec3, VecType};
+use glam::Vec3;
+use sdf_vecs::{ComponentAccess, SwizzleDim2, VecType};
 
 use crate::{Operator, Spatial, VariableContainer, };
 
@@ -6,7 +7,7 @@ impl_unary_op!(X, x);
 
 impl Operator for X {
     fn operate(&self, pos: &Vec3) -> VecType {
-        Vec1::new(self.0.operate(pos).x()).into()
+        self.0.operate(pos).x().into()
     }
 }
 
@@ -14,7 +15,7 @@ impl_unary_op!(Y, y);
 
 impl Operator for Y {
     fn operate(&self, pos: &Vec3) -> VecType {
-        Vec1::new(self.0.operate(pos).y()).into()
+        self.0.operate(pos).y().into()
     }
 }
 
@@ -22,7 +23,7 @@ impl_unary_op!(Z, z);
 
 impl Operator for Z {
     fn operate(&self, pos: &Vec3) -> VecType {
-        Vec1::new(self.0.operate(pos).z()).into()
+        self.0.operate(pos).z().into()
     }
 }
 
@@ -30,7 +31,7 @@ impl_unary_op!(W, w);
 
 impl Operator for W {
     fn operate(&self, pos: &Vec3) -> VecType {
-        Vec1::new(self.0.operate(pos).w()).into()
+        self.0.operate(pos).w().into()
     }
 }
 

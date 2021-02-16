@@ -1,4 +1,5 @@
-use sdf_vecs::{Vec3, VecType};
+use glam::Vec3;
+use sdf_vecs::{VecType};
 
 use crate::{Operator, Spatial};
 

@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_main, criterion_group, Criterion};
+use glam::Vec3;
 use sdf_enums::EnumSDF;
-use sdf_vecs::Vec3;
 
 
 
