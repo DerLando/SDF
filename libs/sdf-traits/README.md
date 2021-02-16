@@ -63,3 +63,4 @@ While implementing `smooth_union` I recognized, that the current implementation 
    - [x] change the signature of the `operate` function to `operate(&self, pos: &Vec3)`
    - [x] get rid of `VariableContainer` trait
    - [x] implement a new Operator, `VarOp` which will evaluate to whatever variable given.
+ - [x] add layer of indirection via `SDFTree` wrapper struct

@@ -8,7 +8,7 @@ mod sdf;
 mod primitives;
 mod csg;
 
-pub use sdf::TraitSDF;
+pub use sdf::SDFTree;
 
 pub trait VariableContainer {
     fn replace_variable(&mut self, var: &Vec3);
