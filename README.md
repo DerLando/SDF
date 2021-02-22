@@ -26,4 +26,5 @@ The MVP implementations need to implement a minimum feature set, so we can bench
 
  - `circle` primitive
  - `transformations`, *scale* as a factor and *affine* via a transformation matrix
+ - `blending`, take multiple sdf reprs and create a new blended repr from them, f.e. csg
  - `simplify`, combines all constant expressions, f.e. 1 + 1 just becomes 2. *This is not too critical* 

@@ -1,6 +1,6 @@
-use std::{collections::HashSet, ops::{Deref, Index}, rc::Rc};
+use std::{collections::HashSet, ops::{Deref, DerefMut, Index}, rc::Rc};
 
-use sdf_vecs::{Vec3, VecType, ops::Length};
+use sdf_vecs::{Vec3, VecType, ops::{Length, min_high}};
 
 pub struct SdfTree {
     constants: Vec<VecType>,
@@ -17,13 +17,29 @@ impl Default for SdfTree {
 }
 
 impl SdfTree {
+    fn insert_const(constants: &mut Vec<VecType>, value: &VecType) -> Constant {
+        constants.push(*value);
+        Rc::new(*constants.last().unwrap())
+    }
+
     fn get_const(&mut self, value: &VecType) -> Constant {
         if let Some(c) = self.constants.iter().find(|c| *c == value) {
             Rc::new(*c)
         } else {
-            self.constants.push(*value);
-            Rc::new(*self.constants.last().unwrap())
+            Self::insert_const(&mut self.constants, value)
         }
+    }
+
+    fn migrate_constants(node: &mut Node, constants: &mut Vec<VecType>) {
+        node
+            .iter_mut()
+            .for_each(|v| {
+                match v {
+                    VariableType::Constant(c) => *c = Self::insert_const(constants, c.deref()),
+                    _ => ()
+                }
+            });
+
     }
 
     pub fn sign_at(&self, sample: &Vec3) -> f32 {
@@ -53,6 +69,27 @@ impl SdfTree {
         tree.root = Node::Binary(Box::new(sub_node));
         tree
     }
+
+    pub fn union(a: Self, b: Self) -> Self {
+        let root = BinaryNode {
+            args: [
+                VariableType::Node(a.root),
+                VariableType::Node(b.root)
+            ],
+            op: BinaryOperator::Min
+        };
+
+        let constants: Vec<_> = Vec::with_capacity(a.constants.len() + b.constants.len());
+
+        let mut union = Self {
+            constants,
+            root: Node::Binary(Box::new(root))
+        };
+
+        Self::migrate_constants(&mut union.root, &mut union.constants);
+
+        union
+    }
 }
 
 fn length(node: &UnaryNode, sample: &Vec3) -> VecType {
@@ -69,13 +106,21 @@ fn sub(node: &BinaryNode, sample: &Vec3) -> VecType {
     lhs - rhs
 }
 
+fn min(node: &BinaryNode, sample: &Vec3) -> VecType {
+    let lhs = node.args[0].operate(sample);
+    let rhs = node.args[1].operate(sample);
+
+    min_high(&lhs, &rhs)
+}
+
 enum UnaryOperator {
     Length,
     NoOp
 }
 
 enum BinaryOperator {
-    Sub
+    Sub,
+    Min
 }
 
 enum TernaryOperator {
@@ -117,6 +162,7 @@ impl Operator for BinaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
         match self.op {
             BinaryOperator::Sub => sub(self, sample),
+            BinaryOperator::Min => min(self, sample)
         }
     }
 }
@@ -161,6 +207,21 @@ impl Operator for Node {
     }
 }
 
+trait VariableContainer {
+    fn iter_mut(&mut self) -> std::slice::IterMut<VariableType>;
+}
+
+impl VariableContainer for Node {
+    fn iter_mut(&mut self) -> std::slice::IterMut<VariableType> {
+        match self {
+            Node::Unary(n) => n.deref_mut().args.iter_mut(),
+            Node::Binary(n) => n.deref_mut().args.iter_mut(),
+            Node::Ternary(n) => n.deref_mut().args.iter_mut(),
+            Node::Quaternary(n) => n.deref_mut().args.iter_mut(),
+        }
+    }
+}
+
 enum VariableType {
     Variable,
     Constant(Constant),
@@ -189,5 +250,11 @@ mod tests {
         assert_eq!(-1.0, tree.sign_at(&Vec3::default()));
         assert_eq!(0.0, tree.sign_at(&Vec3::new(1.0, 0.0, 0.0)));
         assert_eq!(1.0, tree.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
+
+        let other = SdfTree::circle(2.0);
+
+        let union = SdfTree::union(tree, other);
+
+        assert_eq!(0.0, union.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
     }
 }
