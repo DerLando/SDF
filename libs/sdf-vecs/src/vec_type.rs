@@ -1,7 +1,7 @@
 use glam::{Vec2, Vec3, Vec4};
 
 /// All possible vec dimensions
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy,)]
 pub enum VecType {
     Scalar(f32),
     Vec2(Vec2),

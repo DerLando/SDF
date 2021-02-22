@@ -59,6 +59,13 @@ While implementing `smooth_union` I recognized, that the current implementation 
 
 I'm thinking about how to best implement Transformations. For now the easiest and most flexible choice is probably to store a Transformation Matrix on each `SDFTree` instance, but I am not sure how this will work when blending / merging multiple `SDFTree`s. Also to implement transformations we will now need to bring in a linear algebra crate.
 
+A low-hanging fruit for optimization is evaluating all constant expressions inside a `SDFTree`, folding it into only the variable parts. This decreases the size and the number of operations that have to be performed. F.e. v + 2 + 3 should simplify to v + 5. For this we will need a TreeWalker that can traverse up the tree, folding all simplifyable nodes it finds. As all we know about the nodes are `dyn Spatial`, we need to add a trait to expose the inner components of the ops to manipulate them.
+Some initial invastigation hints that we have to implement `as_any` for `Spatial` and use *runtime reflection* to get the concrete types in our optimization pass. This should be fine, as we only ever do this once, when a `TreeSDF`s sign is queried for the first time. We should probably also expose this simplification as a public method, as in a parallelized environment, one would want to call this before openening all threads.
+The example mentioned here: https://doc.rust-lang.org/std/any/ , is pretty close to our use case.
+Although matching for all different op types sounds nightmarish :/
+
+Another way would be a `real` Tree which has a backing `HashSet<Constant>` and hands out references to the constants to all operators. On paper this sounds like a serious departure from Trait opjects, so it would need to be prototyped in a different crate. Probably a good time to finally implement a node-based tree representation of sdf.
+
 # TODO
 
  - [x] allow sampling of `sdf` without mutable access, this involves multiple steps:
