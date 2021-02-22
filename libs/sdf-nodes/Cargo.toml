@@ -15,3 +15,7 @@ criterion = "0.3"
 [[bench]]
 name = "circle_node_benchmark"
 harness = false
+
+[[bench]]
+name = "circle_scale_node_benchmark"
+harness = false

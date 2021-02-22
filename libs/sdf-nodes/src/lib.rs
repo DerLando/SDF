@@ -1,6 +1,6 @@
 use std::{collections::HashSet, ops::{Deref, DerefMut, Index}, rc::Rc};
 
-use sdf_vecs::{Vec3, VecType, ops::{Length, min_high}};
+use sdf_vecs::{Vec3, VecType, ops::{Length, min_high, mul_high}};
 
 pub struct SdfTree {
     constants: Vec<VecType>,
@@ -11,23 +11,23 @@ impl Default for SdfTree {
     fn default() -> Self {
         Self {
             constants: Vec::new(),
-            root: Node::Unary(Box::new(UnaryNode{args: [VariableType::Variable], op: UnaryOperator::NoOp}))
+            root: Node::Unary(Box::new(UnaryNode{args: [VariableType::Variable], op: UnaryOperator::NoOp, scale: 1.0}))
         }
     }
 }
 
 impl SdfTree {
     fn insert_const(constants: &mut Vec<VecType>, value: &VecType) -> Constant {
-        constants.push(*value);
-        Rc::new(*constants.last().unwrap())
+        if let Some(c) = constants.iter().find(|c| *c == value) {
+            Rc::new(*c)
+        } else {
+            constants.push(*value);
+            Rc::new(*constants.last().unwrap())
+        }
     }
 
     fn get_const(&mut self, value: &VecType) -> Constant {
-        if let Some(c) = self.constants.iter().find(|c| *c == value) {
-            Rc::new(*c)
-        } else {
-            Self::insert_const(&mut self.constants, value)
-        }
+        Self::insert_const(&mut self.constants, value)
     }
 
     fn migrate_constants(node: &mut Node, constants: &mut Vec<VecType>) {
@@ -56,14 +56,16 @@ impl SdfTree {
         // set up nodes
         let length_node = UnaryNode {
             args: [VariableType::Variable],
-            op: UnaryOperator::Length
+            op: UnaryOperator::Length,
+            scale: 1.0
         };
         let sub_node = BinaryNode {
             args: [
                 VariableType::Node(Node::Unary(Box::new(length_node))),
                 VariableType::Constant(tree.get_const(&radius.into()))
             ],
-            op: BinaryOperator::Sub
+            op: BinaryOperator::Sub,
+            scale: 1.0
         };
 
         tree.root = Node::Binary(Box::new(sub_node));
@@ -76,7 +78,8 @@ impl SdfTree {
                 VariableType::Node(a.root),
                 VariableType::Node(b.root)
             ],
-            op: BinaryOperator::Min
+            op: BinaryOperator::Min,
+            scale: 1.0
         };
 
         let constants: Vec<_> = Vec::with_capacity(a.constants.len() + b.constants.len());
@@ -89,6 +92,25 @@ impl SdfTree {
         Self::migrate_constants(&mut union.root, &mut union.constants);
 
         union
+    }
+
+    pub fn scale(mut sdf: Self, factor: f32) -> Self {
+        let s = sdf.get_const(&factor.into());
+
+        // wrap root in mul op
+        let root = Node::Binary(Box::new(BinaryNode {
+            args: [
+                VariableType::Node(sdf.root),
+                VariableType::Constant(s)
+            ],
+            op: BinaryOperator::Mul,
+            scale: factor
+        }));
+
+        Self {
+            constants: sdf.constants,
+            root
+        }
     }
 }
 
@@ -113,6 +135,13 @@ fn min(node: &BinaryNode, sample: &Vec3) -> VecType {
     min_high(&lhs, &rhs)
 }
 
+fn mul(node: &BinaryNode, sample: &Vec3) -> VecType {
+    let lhs = node.args[0].operate(sample);
+    let rhs = node.args[1].operate(sample);
+
+    mul_high(&lhs, &rhs)
+}
+
 enum UnaryOperator {
     Length,
     NoOp
@@ -120,7 +149,8 @@ enum UnaryOperator {
 
 enum BinaryOperator {
     Sub,
-    Min
+    Min,
+    Mul
 }
 
 enum TernaryOperator {
@@ -141,28 +171,42 @@ type Constant = Rc<VecType>;
 
 struct UnaryNode {
     args: [VariableType; 1],
-    op: UnaryOperator
+    op: UnaryOperator,
+    scale: f32
 }
 
 impl Operator for UnaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
+        let mut p: Vec3 = *sample;
+
+        // test if we need to compress space
+        if self.scale != 1.0 {p = p / self.scale};
+        
         match self.op {
-            UnaryOperator::Length => length(self, sample),
-            UnaryOperator::NoOp => VecType::Vec3(*sample),
+            UnaryOperator::Length => length(self, &p),
+            UnaryOperator::NoOp => VecType::Vec3(p),
         }
     }
 }
 
 struct BinaryNode {
     args: [VariableType; 2],
-    op: BinaryOperator
+    op: BinaryOperator,
+    scale: f32
 }
 
 impl Operator for BinaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
+        let mut p: Vec3 = *sample;
+
+        // test if we need to compress space
+        if self.scale != 1.0 {p = p / self.scale};
+
+
         match self.op {
-            BinaryOperator::Sub => sub(self, sample),
-            BinaryOperator::Min => min(self, sample)
+            BinaryOperator::Sub => sub(self, &p),
+            BinaryOperator::Min => min(self, &p),
+            BinaryOperator::Mul => mul(self, &p),
         }
     }
 }
@@ -194,6 +238,16 @@ enum Node {
     Binary(Box<BinaryNode>),
     Ternary(Box<TernaryNode>),
     Quaternary(Box<QuaternaryNode>)
+}
+
+impl Node {
+    fn need_compress_space(&self) -> bool {
+        match self {
+            Node::Unary(n) => n.scale != 1.0,
+            Node::Binary(n) => n.scale != 1.0,
+            _ => false
+        }
+    }
 }
 
 impl Operator for Node {
@@ -256,5 +310,12 @@ mod tests {
         let union = SdfTree::union(tree, other);
 
         assert_eq!(0.0, union.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
+
+        let scale = SdfTree::circle(1.0);
+        let scale = SdfTree::scale(scale, 2.0);
+        assert_eq!(0.0, scale.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
+        let scale = SdfTree::scale(scale, 0.5);
+        assert_eq!(0.0, scale.sign_at(&Vec3::new(1.0, 0.0, 0.0)));
+
     }
 }
