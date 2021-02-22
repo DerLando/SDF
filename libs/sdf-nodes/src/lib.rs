@@ -1,13 +1,13 @@
-use std::{collections::HashSet, ops::{Deref, Index}};
+use std::{collections::HashSet, ops::{Deref, Index}, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType, ops::Length};
 
-struct SdfTree<'a> {
+pub struct SdfTree {
     constants: Vec<VecType>,
-    root: Node<'a>
+    root: Node
 }
 
-impl<'a> Default for SdfTree<'a> {
+impl Default for SdfTree {
     fn default() -> Self {
         Self {
             constants: Vec::new(),
@@ -16,16 +16,26 @@ impl<'a> Default for SdfTree<'a> {
     }
 }
 
-impl<'a> SdfTree<'a> {
-    fn get_const(&'a self, value: &VecType) -> Constant {
-        self.constants.
-        Constant(&self.constants[index])
+impl SdfTree {
+    fn get_const(&mut self, value: &VecType) -> Constant {
+        if let Some(c) = self.constants.iter().find(|c| *c == value) {
+            Rc::new(*c)
+        } else {
+            self.constants.push(*value);
+            Rc::new(*self.constants.last().unwrap())
+        }
+    }
+
+    pub fn sign_at(&self, sample: &Vec3) -> f32 {
+        match self.root.operate(sample) {
+            VecType::Scalar(s) => s,
+            _ => unreachable!()
+        }
     }
 
     pub fn circle(radius: f32) -> Self {
         // set up tree
         let mut tree = Self::default();
-        tree.constants.push(radius.into());
 
         // set up nodes
         let length_node = UnaryNode {
@@ -35,12 +45,12 @@ impl<'a> SdfTree<'a> {
         let sub_node = BinaryNode {
             args: [
                 VariableType::Node(Node::Unary(Box::new(length_node))),
-                VariableType::Constant(tree.get_const(0))
+                VariableType::Constant(tree.get_const(&radius.into()))
             ],
             op: BinaryOperator::Sub
         };
 
-        std::mem::replace(&mut tree.root, Node::Binary(Box::new(sub_node)));
+        tree.root = Node::Binary(Box::new(sub_node));
         tree
     }
 }
@@ -82,14 +92,14 @@ trait Operator {
 
 struct Variable;
 
-struct Constant<'a>(&'a VecType);
+type Constant = Rc<VecType>;
 
-struct UnaryNode<'a> {
-    args: [VariableType<'a>; 1],
+struct UnaryNode {
+    args: [VariableType; 1],
     op: UnaryOperator
 }
 
-impl<'a> Operator for UnaryNode<'a> {
+impl Operator for UnaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
         match self.op {
             UnaryOperator::Length => length(self, sample),
@@ -98,12 +108,12 @@ impl<'a> Operator for UnaryNode<'a> {
     }
 }
 
-struct BinaryNode<'a> {
-    args: [VariableType<'a>; 2],
+struct BinaryNode {
+    args: [VariableType; 2],
     op: BinaryOperator
 }
 
-impl<'a> Operator for BinaryNode<'a> {
+impl Operator for BinaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
         match self.op {
             BinaryOperator::Sub => sub(self, sample),
@@ -111,36 +121,36 @@ impl<'a> Operator for BinaryNode<'a> {
     }
 }
 
-struct TernaryNode<'a> {
-    args: [VariableType<'a>; 3],
+struct TernaryNode {
+    args: [VariableType; 3],
     op: TernaryOperator
 }
 
-impl<'a> Operator for TernaryNode<'a> {
+impl Operator for TernaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
         todo!()
     }
 }
 
-struct QuaternaryNode<'a> {
-    args: [VariableType<'a>; 4],
+struct QuaternaryNode {
+    args: [VariableType; 4],
     op: QuaternaryOperator
 }
 
-impl<'a> Operator for QuaternaryNode<'a> {
+impl Operator for QuaternaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
         todo!()
     }
 }
 
-enum Node<'a> {
-    Unary(Box<UnaryNode<'a>>),
-    Binary(Box<BinaryNode<'a>>),
-    Ternary(Box<TernaryNode<'a>>),
-    Quaternary(Box<QuaternaryNode<'a>>)
+enum Node {
+    Unary(Box<UnaryNode>),
+    Binary(Box<BinaryNode>),
+    Ternary(Box<TernaryNode>),
+    Quaternary(Box<QuaternaryNode>)
 }
 
-impl<'a> Operator for Node<'a> {
+impl Operator for Node {
     fn operate(&self, sample: &Vec3) -> VecType {
         match self {
             Node::Unary(n) => n.deref().operate(sample),
@@ -151,17 +161,17 @@ impl<'a> Operator for Node<'a> {
     }
 }
 
-enum VariableType<'a> {
+enum VariableType {
     Variable,
-    Constant(Constant<'a>),
-    Node(Node<'a>)
+    Constant(Constant),
+    Node(Node)
 }
 
-impl<'a> Operator for VariableType<'a> {
+impl Operator for VariableType {
     fn operate(&self, sample: &Vec3) -> VecType {
         match self {
             VariableType::Variable => VecType::Vec3(*sample),
-            VariableType::Constant(c) => *c.0,
+            VariableType::Constant(c) => *c.deref(),
             VariableType::Node(n) => n.operate(sample)
         }
     }
@@ -169,8 +179,15 @@ impl<'a> Operator for VariableType<'a> {
 
 #[cfg(test)]
 mod tests {
+
+    use super::*;
+
     #[test]
     fn it_works() {
-        assert_eq!(2 + 2, 4);
+        let tree = SdfTree::circle(1.0);
+
+        assert_eq!(-1.0, tree.sign_at(&Vec3::default()));
+        assert_eq!(0.0, tree.sign_at(&Vec3::new(1.0, 0.0, 0.0)));
+        assert_eq!(1.0, tree.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
     }
 }

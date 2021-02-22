@@ -8,3 +8,10 @@ edition = "2018"
 
 [dependencies]
 sdf-vecs = { path = "../sdf-vecs" }
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "circle_node_benchmark"
+harness = false
