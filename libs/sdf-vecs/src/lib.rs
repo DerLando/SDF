@@ -6,11 +6,13 @@ mod scale;
 pub mod ops;
 mod dimension;
 mod vec_type;
+mod transform;
 
 trait ComponentDimensionVec: component_access::ComponentAccess + Dimension {}
 
 pub use self::{vec_type::VecType,
-    component_access::ComponentAccess, swizzle::{SwizzleDim, SwizzleDim2, SwizzleDim3}
+    component_access::ComponentAccess, swizzle::{SwizzleDim, SwizzleDim2, SwizzleDim3},
+    transform::{RotationAxis, Transform, TransformHelper}
 };
 pub use glam::Vec3;
 
