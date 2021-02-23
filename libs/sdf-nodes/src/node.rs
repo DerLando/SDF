@@ -1,13 +1,26 @@
-use std::ops::{Deref, DerefMut};
+use std::{fmt::Display, ops::{Deref, DerefMut}};
 
-use sdf_vecs::{Vec3, VecType};
+use sdf_vecs::{Transform, Vec3, VecType};
 
 use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, length, sub, min, mul}, variable::VariableType};
 
 pub(crate) struct UnaryNode {
     args: [VariableType; 1],
     op: UnaryOperator,
-    scale: f32
+    scale: f32,
+    transform: Transform
+}
+
+impl Default for UnaryNode {
+    fn default() -> Self {
+        UnaryNode::new(VariableType::Variable, UnaryOperator::NoOp)
+    }
+}
+
+impl Display for UnaryNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}({})", self.op, self.args[0])
+    }
 }
 
 impl UnaryNode {
@@ -15,7 +28,8 @@ impl UnaryNode {
         Self {
             args: [arg],
             op,
-            scale: 1.0
+            scale: 1.0,
+            transform: Transform::default()
         }
     }
 }
@@ -37,7 +51,14 @@ impl Operator for UnaryNode {
 pub(crate) struct BinaryNode {
     args: [VariableType; 2],
     op: BinaryOperator,
-    scale: f32
+    scale: f32,
+    transform: Transform
+}
+
+impl Display for BinaryNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}({}, {})", self.op, self.args[0], self.args[1])
+    }
 }
 
 impl Operator for BinaryNode {
@@ -82,7 +103,8 @@ pub(crate) struct BinaryNodeBuilder {
     lhs: VariableType,
     rhs: VariableType,
     op: BinaryOperator,
-    scale: f32
+    scale: f32,
+    transform: Transform
 }
 
 impl BinaryNodeBuilder {
@@ -91,7 +113,8 @@ impl BinaryNodeBuilder {
             lhs: VariableType::Variable,
             rhs: VariableType::Variable,
             op: BinaryOperator::Min,
-            scale: 1.0
+            scale: 1.0,
+            transform: Transform::default()
         }
     }
 
@@ -115,11 +138,17 @@ impl BinaryNodeBuilder {
         self
     }
 
+    pub fn transform(mut self, transform: Transform) -> Self {
+        self.transform = transform;
+        self
+    }
+
     pub fn build(self) -> BinaryNode {
         BinaryNode {
             args: [self.lhs, self.rhs],
             op: self.op,
-            scale: self.scale
+            scale: self.scale,
+            transform: self.transform
         }
     }
 }
@@ -129,6 +158,16 @@ pub(crate) enum Node {
     Binary(Box<BinaryNode>),
     Ternary(Box<TernaryNode>),
     Quaternary(Box<QuaternaryNode>)
+}
+
+impl Display for Node {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Node::Unary(n) => write!(f, "{}", n),
+            Node::Binary(n) => write!(f, "{}", n),
+            _ => unreachable!()
+        }
+    }
 }
 
 impl Node {
@@ -143,7 +182,7 @@ impl Node {
 
 impl Default for Node {
     fn default() -> Self {
-        Node::Unary(Box::new(UnaryNode{args: [VariableType::Variable], op: UnaryOperator::NoOp, scale: 1.0}))
+        Node::Unary(Box::new(UnaryNode::default()))
     }
 }
 

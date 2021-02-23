@@ -1,4 +1,4 @@
-use std::{ops::Deref, rc::Rc};
+use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType};
 
@@ -7,6 +7,12 @@ use crate::{constant::Constant, constant::ConstantContainer, node::{ArgsIterMut,
 pub struct SdfTree {
     constants: ConstantContainer,
     root: Node
+}
+
+impl Display for SdfTree {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.root)
+    }
 }
 
 impl Default for SdfTree {
