@@ -5,7 +5,6 @@ mod node;
 mod constant;
 mod variable;
 mod ops;
-mod fold;
 
 pub use {sdf::SdfTree};
 

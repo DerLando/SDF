@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, rc::Rc};
 
 use sdf_vecs::VecType;
 
@@ -47,13 +47,13 @@ impl VariableType {
 
 impl From<UnaryNode> for VariableType {
     fn from(arg: UnaryNode) -> Self {
-        VariableType::Node(Node::Unary(Box::new(arg)))
+        VariableType::Node(Node::Unary(Rc::new(arg)))
     }
 }
 
 impl From<BinaryNode> for VariableType {
     fn from(arg: BinaryNode) -> Self {
-        VariableType::Node(Node::Binary(Box::new(arg)))
+        VariableType::Node(Node::Binary(Rc::new(arg)))
     }
 }
 

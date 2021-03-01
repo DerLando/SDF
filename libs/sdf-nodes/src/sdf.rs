@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType};
 
-use crate::{constant::Constant, node::{ArgsIterMut, BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, variable::VariableType};
+use crate::{constant::Constant, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, variable::VariableType};
 
 pub struct SdfTree {
     root: Node
@@ -48,7 +48,7 @@ impl SdfTree {
                 .build()
                 ;
 
-        tree.root = Node::Binary(Box::new(sub_node));
+        tree.root = Node::Binary(Rc::new(sub_node));
         tree
     }
 
@@ -62,7 +62,7 @@ impl SdfTree {
                 ;
 
         let mut union = Self {
-            root: Node::Binary(Box::new(root))
+            root: Node::Binary(Rc::new(root))
         };
 
         union

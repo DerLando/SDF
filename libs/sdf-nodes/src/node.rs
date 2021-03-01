@@ -1,4 +1,4 @@
-use std::{fmt::Display, ops::{Deref, DerefMut}};
+use std::{fmt::Display, ops::{Deref, DerefMut}, rc::Rc};
 
 use sdf_vecs::{Transform, Vec3, VecType};
 
@@ -153,11 +153,12 @@ impl BinaryNodeBuilder {
     }
 }
 
+#[derive(Clone)]
 pub(crate) enum Node {
-    Unary(Box<UnaryNode>),
-    Binary(Box<BinaryNode>),
-    Ternary(Box<TernaryNode>),
-    Quaternary(Box<QuaternaryNode>)
+    Unary(Rc<UnaryNode>),
+    Binary(Rc<BinaryNode>),
+    Ternary(Rc<TernaryNode>),
+    Quaternary(Rc<QuaternaryNode>)
 }
 
 impl Display for Node {
@@ -182,7 +183,7 @@ impl Node {
 
 impl Default for Node {
     fn default() -> Self {
-        Node::Unary(Box::new(UnaryNode::default()))
+        Node::Unary(Rc::new(UnaryNode::default()))
     }
 }
 
@@ -201,10 +202,6 @@ pub(crate) trait ArgsIter {
     fn args_iter(&self) -> std::slice::Iter<VariableType>;
 }
 
-pub(crate) trait ArgsIterMut {
-    fn args_iter_mut(&mut self) -> std::slice::IterMut<VariableType>;
-}
-
 macro_rules! impl_args_getters {
     ($name: ident) => {
         impl Args for $name {
@@ -216,12 +213,6 @@ macro_rules! impl_args_getters {
         impl ArgsIter for $name {
             fn args_iter(&self) -> std::slice::Iter<VariableType> {
                 self.args.iter()
-            }
-        }
-
-        impl ArgsIterMut for $name {
-            fn args_iter_mut(&mut self) -> std::slice::IterMut<VariableType> {
-                self.args.iter_mut()
             }
         }
     };
@@ -239,17 +230,6 @@ impl ArgsIter for Node {
             Node::Binary(n) => n.deref().args_iter(),
             Node::Ternary(n) => n.deref().args_iter(),
             Node::Quaternary(n) => n.deref().args_iter(),
-        }
-    }
-}
-
-impl ArgsIterMut for Node {
-    fn args_iter_mut(&mut self) -> std::slice::IterMut<VariableType> {
-        match self {
-            Node::Unary(n) => n.deref_mut().args_iter_mut(),
-            Node::Binary(n) => n.deref_mut().args_iter_mut(),
-            Node::Ternary(n) => n.deref_mut().args_iter_mut(),
-            Node::Quaternary(n) => n.deref_mut().args_iter_mut(),
         }
     }
 }
