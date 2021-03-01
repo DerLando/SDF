@@ -2,10 +2,9 @@ use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType};
 
-use crate::{constant::Constant, constant::ConstantContainer, node::{ArgsIterMut, BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, variable::VariableType};
+use crate::{constant::Constant, node::{ArgsIterMut, BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, variable::VariableType};
 
 pub struct SdfTree {
-    constants: ConstantContainer,
     root: Node
 }
 
@@ -18,25 +17,12 @@ impl Display for SdfTree {
 impl Default for SdfTree {
     fn default() -> Self {
         Self {
-            constants: ConstantContainer::default(),
             root: Node::default()
         }
     }
 }
 
 impl SdfTree {
-    fn migrate_constants(node: &mut Node, constants: &mut ConstantContainer) {
-        node
-            .args_iter_mut()
-            .for_each(|v| {
-                match v {
-                    VariableType::Constant(c) => *c = constants.get_or_insert(c.deref()),
-                    _ => ()
-                }
-            });
-
-    }
-
     pub fn sign_at(&self, sample: &Vec3) -> f32 {
         match self.root.operate(sample) {
             VecType::Scalar(s) => s,
@@ -57,7 +43,7 @@ impl SdfTree {
         let sub_node = 
             BinaryNodeBuilder::new()
                 .lhs(length_node.into())
-                .rhs(VariableType::Constant(tree.constants.get_or_insert(&radius.into())))
+                .rhs(radius.into())
                 .op(BinaryOperator::Sub)
                 .build()
                 ;
@@ -75,20 +61,15 @@ impl SdfTree {
                 .build()
                 ;
 
-        let constants = ConstantContainer::default();
-
         let mut union = Self {
-            constants,
             root: Node::Binary(Box::new(root))
         };
-
-        Self::migrate_constants(&mut union.root, &mut union.constants);
 
         union
     }
 
     pub fn scale(mut sdf: Self, factor: f32) -> Self {
-        let s = sdf.constants.get_or_insert(&factor.into());
+        let s: Constant = factor.into();
 
         // wrap root in mul op
         let root = 
@@ -102,7 +83,6 @@ impl SdfTree {
             ;
 
         Self {
-            constants: sdf.constants,
             root
         }
     }

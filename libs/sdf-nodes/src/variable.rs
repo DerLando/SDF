@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use sdf_vecs::VecType;
+
 use crate::{constant::Constant, node::{BinaryNode, Node, UnaryNode}};
 
 pub(crate) struct Variable;
@@ -52,5 +54,17 @@ impl From<UnaryNode> for VariableType {
 impl From<BinaryNode> for VariableType {
     fn from(arg: BinaryNode) -> Self {
         VariableType::Node(Node::Binary(Box::new(arg)))
+    }
+}
+
+impl From<VecType> for VariableType {
+    fn from(arg: VecType) -> Self {
+        VariableType::Constant(arg)
+    }
+}
+
+impl From<f32> for VariableType {
+    fn from(arg: f32) -> Self {
+        VariableType::Constant(arg.into())
     }
 }
