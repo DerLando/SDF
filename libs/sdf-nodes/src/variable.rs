@@ -4,8 +4,6 @@ use sdf_vecs::VecType;
 
 use crate::{constant::Constant, node::{BinaryNode, Node, UnaryNode}};
 
-pub(crate) struct Variable;
-
 pub(crate) enum VariableType {
     Variable,
     Constant(Constant),

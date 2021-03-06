@@ -8,7 +8,7 @@ pub(crate) trait Operator {
     fn operate(&self, sample: &Vec3) -> VecType;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum UnaryOperator {
     Length,
     NoOp
@@ -23,6 +23,7 @@ impl Display for UnaryOperator {
     }
 }
 
+#[derive(Clone, Copy)]
 pub(crate) enum BinaryOperator {
     Sub,
     Min,

@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType};
 
-use crate::{constant::Constant, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, variable::VariableType};
+use crate::{constant::Constant, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, simplify::{SimplificationFolder}, variable::VariableType};
 
 pub struct SdfTree {
     root: Node
@@ -28,6 +28,11 @@ impl SdfTree {
             VecType::Scalar(s) => s,
             _ => unreachable!()
         }
+    }
+
+    pub fn simplify(&mut self) {
+        let mut simplifier = SimplificationFolder;
+        self.root = simplifier.simplify(&self.root);
     }
 
     pub fn circle(radius: f32) -> Self {

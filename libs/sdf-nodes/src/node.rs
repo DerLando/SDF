@@ -237,3 +237,45 @@ impl ArgsIter for Node {
 pub(crate) trait Args {
     fn args(&self) -> &[VariableType];
 }
+
+pub(crate) trait OpAccess {
+    type OpType;
+
+    fn op(&self) -> Self::OpType;
+}
+
+impl OpAccess for UnaryNode {
+    type OpType = UnaryOperator;
+
+    fn op(&self) -> Self::OpType {
+        self.op
+    }
+}
+
+impl OpAccess for BinaryNode {
+    type OpType = BinaryOperator;
+
+    fn op(&self) -> Self::OpType {
+        self.op
+    }
+}
+
+pub(crate) trait FoldArgs {
+    fn fold_args(&self, args: impl Iterator<Item = VariableType>) -> Self;
+}
+
+impl FoldArgs for UnaryNode {
+    fn fold_args(&self, mut args: impl Iterator<Item = VariableType>) -> Self {
+        Self::new(args.next().unwrap(), self.op)
+    }
+}
+
+impl FoldArgs for BinaryNode {
+    fn fold_args(&self, mut args: impl Iterator<Item = VariableType>) -> Self {
+        BinaryNodeBuilder::new()
+            .lhs(args.next().unwrap())
+            .rhs(args.next().unwrap())
+            .op(self.op)
+            .build()
+    }
+}
