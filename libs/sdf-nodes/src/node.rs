@@ -1,13 +1,26 @@
-use std::ops::{Deref, DerefMut};
+use std::{fmt::Display, ops::{Deref, DerefMut}, rc::Rc};
 
-use sdf_vecs::{Vec3, VecType};
+use sdf_vecs::{Transform, Vec3, VecType};
 
 use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, length, sub, min, mul}, variable::VariableType};
 
 pub(crate) struct UnaryNode {
     args: [VariableType; 1],
     op: UnaryOperator,
-    scale: f32
+    scale: f32,
+    transform: Transform
+}
+
+impl Default for UnaryNode {
+    fn default() -> Self {
+        UnaryNode::new(VariableType::Variable, UnaryOperator::NoOp)
+    }
+}
+
+impl Display for UnaryNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}({})", self.op, self.args[0])
+    }
 }
 
 impl UnaryNode {
@@ -15,7 +28,8 @@ impl UnaryNode {
         Self {
             args: [arg],
             op,
-            scale: 1.0
+            scale: 1.0,
+            transform: Transform::default()
         }
     }
 }
@@ -37,7 +51,14 @@ impl Operator for UnaryNode {
 pub(crate) struct BinaryNode {
     args: [VariableType; 2],
     op: BinaryOperator,
-    scale: f32
+    scale: f32,
+    transform: Transform
+}
+
+impl Display for BinaryNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}({}, {})", self.op, self.args[0], self.args[1])
+    }
 }
 
 impl Operator for BinaryNode {
@@ -82,7 +103,8 @@ pub(crate) struct BinaryNodeBuilder {
     lhs: VariableType,
     rhs: VariableType,
     op: BinaryOperator,
-    scale: f32
+    scale: f32,
+    transform: Transform
 }
 
 impl BinaryNodeBuilder {
@@ -91,7 +113,8 @@ impl BinaryNodeBuilder {
             lhs: VariableType::Variable,
             rhs: VariableType::Variable,
             op: BinaryOperator::Min,
-            scale: 1.0
+            scale: 1.0,
+            transform: Transform::default()
         }
     }
 
@@ -115,20 +138,37 @@ impl BinaryNodeBuilder {
         self
     }
 
+    pub fn transform(mut self, transform: Transform) -> Self {
+        self.transform = transform;
+        self
+    }
+
     pub fn build(self) -> BinaryNode {
         BinaryNode {
             args: [self.lhs, self.rhs],
             op: self.op,
-            scale: self.scale
+            scale: self.scale,
+            transform: self.transform
         }
     }
 }
 
+#[derive(Clone)]
 pub(crate) enum Node {
-    Unary(Box<UnaryNode>),
-    Binary(Box<BinaryNode>),
-    Ternary(Box<TernaryNode>),
-    Quaternary(Box<QuaternaryNode>)
+    Unary(Rc<UnaryNode>),
+    Binary(Rc<BinaryNode>),
+    Ternary(Rc<TernaryNode>),
+    Quaternary(Rc<QuaternaryNode>)
+}
+
+impl Display for Node {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Node::Unary(n) => write!(f, "{}", n),
+            Node::Binary(n) => write!(f, "{}", n),
+            _ => unreachable!()
+        }
+    }
 }
 
 impl Node {
@@ -143,7 +183,7 @@ impl Node {
 
 impl Default for Node {
     fn default() -> Self {
-        Node::Unary(Box::new(UnaryNode{args: [VariableType::Variable], op: UnaryOperator::NoOp, scale: 1.0}))
+        Node::Unary(Rc::new(UnaryNode::default()))
     }
 }
 
@@ -162,10 +202,6 @@ pub(crate) trait ArgsIter {
     fn args_iter(&self) -> std::slice::Iter<VariableType>;
 }
 
-pub(crate) trait ArgsIterMut {
-    fn args_iter_mut(&mut self) -> std::slice::IterMut<VariableType>;
-}
-
 macro_rules! impl_args_getters {
     ($name: ident) => {
         impl Args for $name {
@@ -177,12 +213,6 @@ macro_rules! impl_args_getters {
         impl ArgsIter for $name {
             fn args_iter(&self) -> std::slice::Iter<VariableType> {
                 self.args.iter()
-            }
-        }
-
-        impl ArgsIterMut for $name {
-            fn args_iter_mut(&mut self) -> std::slice::IterMut<VariableType> {
-                self.args.iter_mut()
             }
         }
     };
@@ -204,17 +234,48 @@ impl ArgsIter for Node {
     }
 }
 
-impl ArgsIterMut for Node {
-    fn args_iter_mut(&mut self) -> std::slice::IterMut<VariableType> {
-        match self {
-            Node::Unary(n) => n.deref_mut().args_iter_mut(),
-            Node::Binary(n) => n.deref_mut().args_iter_mut(),
-            Node::Ternary(n) => n.deref_mut().args_iter_mut(),
-            Node::Quaternary(n) => n.deref_mut().args_iter_mut(),
-        }
+pub(crate) trait Args {
+    fn args(&self) -> &[VariableType];
+}
+
+pub(crate) trait OpAccess {
+    type OpType;
+
+    fn op(&self) -> Self::OpType;
+}
+
+impl OpAccess for UnaryNode {
+    type OpType = UnaryOperator;
+
+    fn op(&self) -> Self::OpType {
+        self.op
     }
 }
 
-pub(crate) trait Args {
-    fn args(&self) -> &[VariableType];
+impl OpAccess for BinaryNode {
+    type OpType = BinaryOperator;
+
+    fn op(&self) -> Self::OpType {
+        self.op
+    }
+}
+
+pub(crate) trait FoldArgs {
+    fn fold_args(&self, args: impl Iterator<Item = VariableType>) -> Self;
+}
+
+impl FoldArgs for UnaryNode {
+    fn fold_args(&self, mut args: impl Iterator<Item = VariableType>) -> Self {
+        Self::new(args.next().unwrap(), self.op)
+    }
+}
+
+impl FoldArgs for BinaryNode {
+    fn fold_args(&self, mut args: impl Iterator<Item = VariableType>) -> Self {
+        BinaryNodeBuilder::new()
+            .lhs(args.next().unwrap())
+            .rhs(args.next().unwrap())
+            .op(self.op)
+            .build()
+    }
 }

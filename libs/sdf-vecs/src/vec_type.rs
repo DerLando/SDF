@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use glam::{Vec2, Vec3, Vec4};
 
 /// All possible vec dimensions
@@ -7,6 +9,17 @@ pub enum VecType {
     Vec2(Vec2),
     Vec3(Vec3),
     Vec4(Vec4)
+}
+
+impl Display for VecType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            VecType::Scalar(s) => write!(f, "{}", *s),
+            VecType::Vec2(v) => write!(f, "({}, {})", v.x, v.y),
+            VecType::Vec3(v) => write!(f, "({}, {}, {})", v.x, v.y, v.z),
+            VecType::Vec4(v) => write!(f, "({}, {}, {}, {})", v.x, v.y, v.z, v.w),
+        }
+    }
 }
 
 impl From<f32> for VecType {

@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{fmt::Display, ops::Deref};
 
 use sdf_vecs::{Vec3, VecType, ops::{Length, min_high, mul_high}};
 
@@ -8,15 +8,36 @@ pub(crate) trait Operator {
     fn operate(&self, sample: &Vec3) -> VecType;
 }
 
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum UnaryOperator {
     Length,
     NoOp
 }
 
+impl Display for UnaryOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UnaryOperator::Length => write!(f, "length"),
+            UnaryOperator::NoOp => write!(f, ""),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
 pub(crate) enum BinaryOperator {
     Sub,
     Min,
     Mul
+}
+
+impl Display for BinaryOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BinaryOperator::Sub => write!(f, "sub"),
+            BinaryOperator::Min => write!(f, "min"),
+            BinaryOperator::Mul => write!(f, "mul"),
+        }
+    }
 }
 
 pub(crate) enum TernaryOperator {
