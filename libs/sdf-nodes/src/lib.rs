@@ -8,6 +8,7 @@ mod node;
 mod constant;
 mod variable;
 mod simplify;
+mod csg;
 
 pub use {sdf::SdfTree};
 

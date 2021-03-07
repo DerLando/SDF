@@ -1,6 +1,6 @@
 use std::{fmt::Display, ops::Deref, rc::Rc};
 
-use sdf_vecs::{Vec3, VecType, ops::{Length, min_high, mul_high}};
+use sdf_vecs::{Vec3, VecType, ops::{Length, Abs, min_high, mul_high, max_high, div_high}};
 
 use crate::{node::{Args, BinaryNode, UnaryNode, Node}, variable::VariableType};
 
@@ -11,7 +11,9 @@ pub(crate) trait Operator {
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum UnaryOperator {
     Length,
-    NoOp
+    NoOp,
+    Neg,
+    Abs
 }
 
 impl Display for UnaryOperator {
@@ -19,6 +21,8 @@ impl Display for UnaryOperator {
         match self {
             UnaryOperator::Length => write!(f, "length"),
             UnaryOperator::NoOp => write!(f, ""),
+            UnaryOperator::Neg => write!(f, "-"),
+            UnaryOperator::Abs => write!(f, "abs"),
         }
     }
 }
@@ -27,7 +31,9 @@ impl Display for UnaryOperator {
 pub(crate) enum BinaryOperator {
     Sub,
     Min,
-    Mul
+    Mul,
+    Max,
+    Div
 }
 
 impl Display for BinaryOperator {
@@ -36,6 +42,8 @@ impl Display for BinaryOperator {
             BinaryOperator::Sub => write!(f, "sub"),
             BinaryOperator::Min => write!(f, "min"),
             BinaryOperator::Mul => write!(f, "mul"),
+            BinaryOperator::Max => write!(f, "max"),
+            BinaryOperator::Div => write!(f, "div"),
         }
     }
 }
@@ -69,7 +77,7 @@ macro_rules! impl_unary_op {
             }
             macro_rules! $name {
                 ($arg:expr) => {
-                    VariableType::Node(Node::Unary(Rc::new(UnaryNode::new($arg, UnaryOperator::[<$name:camel>]))))
+                    Node::Unary(Rc::new(UnaryNode::new($arg.into(), UnaryOperator::[<$name:camel>])))
                 }
             }
         }        
@@ -77,6 +85,8 @@ macro_rules! impl_unary_op {
 }
 
 impl_unary_op!(length, |v: VecType| v.length().into());
+impl_unary_op!(neg, |v: VecType| (-v).into());
+impl_unary_op!(abs, |v: VecType| v.abs().into());
 
 macro_rules! impl_binary_op {
     ($name:ident, $closure:expr) => {
@@ -93,12 +103,12 @@ macro_rules! impl_binary_op {
                     {
                         let node = 
                         BinaryNodeBuilder::new()
-                            .lhs($lhs)
-                            .rhs($rhs)
+                            .lhs($lhs.into())
+                            .rhs($rhs.into())
                             .op(BinaryOperator::[<$name:camel>])
                             .build()
                             ;
-                        VariableType::Node(Node::Binary(Rc::new(node)))
+                        Node::Binary(Rc::new(node))
                     }
                 }
             }            
@@ -109,3 +119,5 @@ macro_rules! impl_binary_op {
 impl_binary_op!(sub, |(a, b)| a - b);
 impl_binary_op!(min, |(a, b)| min_high(&a, &b));
 impl_binary_op!(mul, |(a, b)| mul_high(&a, &b));
+impl_binary_op!(max, |(a, b)| max_high(&a, &b));
+impl_binary_op!(div, |(a, b)| div_high(&a, &b));

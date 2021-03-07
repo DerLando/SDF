@@ -55,6 +55,12 @@ impl From<BinaryNode> for VariableType {
     }
 }
 
+impl From<Node> for VariableType {
+    fn from(arg: Node) -> Self {
+        VariableType::Node(arg)
+    }
+}
+
 impl From<VecType> for VariableType {
     fn from(arg: VecType) -> Self {
         VariableType::Constant(arg)

@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType};
 
-use crate::{constant::Constant, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, simplify::{SimplificationFolder}, variable::VariableType};
+use crate::{constant::Constant, csg::{difference, intersection, union, union_smooth}, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, simplify::{SimplificationFolder}, variable::VariableType};
 
 pub struct SdfTree {
     root: Node
@@ -22,6 +22,7 @@ impl Default for SdfTree {
     }
 }
 
+/// general purpose
 impl SdfTree {
     pub fn sign_at(&self, sample: &Vec3) -> f32 {
         match self.root.operate(sample) {
@@ -34,33 +35,41 @@ impl SdfTree {
         let mut simplifier = SimplificationFolder;
         self.root = simplifier.simplify(&self.root);
     }
+}
 
+/// primitives
+impl SdfTree {
     pub fn circle(radius: f32) -> Self {
-        let r: VariableType = radius.into();
+        let r: Constant = radius.into();
         let root = sub!(length!(VariableType::Variable), r);
 
-        match root {
-            VariableType::Node(n) => Self {root: n},
-            _ => unreachable!()
+        Self {
+            root
         }
     }
+}
 
+/// CSG
+impl SdfTree {
     pub fn union(a: Self, b: Self) -> Self {
-        let root = 
-            BinaryNodeBuilder::new()
-                .lhs(VariableType::Node(a.root))
-                .rhs(VariableType::Node(b.root))
-                .op(BinaryOperator::Min)
-                .build()
-                ;
-
-        let mut union = Self {
-            root: Node::Binary(Rc::new(root))
-        };
-
-        union
+        Self{root: union(a.root, b.root)}
     }
 
+    pub fn intersection(a: Self, b: Self) -> Self {
+        Self{root: intersection(a.root, b.root)}
+    }
+
+    pub fn difference(a: Self, b: Self) -> Self {
+        Self{root: difference(a.root, b.root)}
+    }
+
+    pub fn union_smooth(a: Self, b: Self, smooth_fac: f32) -> Self {
+        Self{root: union_smooth(a.root, b.root, smooth_fac)}
+    }
+}
+
+/// Transforms
+impl SdfTree {
     pub fn scale(&mut self, factor: f32) {
         let s: Constant = factor.into();
 

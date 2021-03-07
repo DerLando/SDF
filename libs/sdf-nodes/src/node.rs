@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::{Deref, DerefMut}, rc::Rc};
 
 use sdf_vecs::{Transform, Vec3, VecType};
 
-use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, length_op, sub_op, min_op, mul_op}, variable::VariableType};
+use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, div_op, length_op, sub_op, min_op, mul_op, max_op, neg_op, abs_op}, variable::VariableType};
 
 pub(crate) struct UnaryNode {
     args: [VariableType; 1],
@@ -44,6 +44,8 @@ impl Operator for UnaryNode {
         match self.op {
             UnaryOperator::Length => length_op(self, &p),
             UnaryOperator::NoOp => VecType::Vec3(p),
+            UnaryOperator::Neg => neg_op(self, &p),
+            UnaryOperator::Abs => abs_op(self, &p)
         }
     }
 }
@@ -73,6 +75,8 @@ impl Operator for BinaryNode {
             BinaryOperator::Sub => sub_op(self, &p),
             BinaryOperator::Min => min_op(self, &p),
             BinaryOperator::Mul => mul_op(self, &p),
+            BinaryOperator::Max => max_op(self, &p),
+            BinaryOperator::Div => div_op(self, &p)
         }
     }
 }
@@ -184,6 +188,16 @@ impl Node {
 impl Default for Node {
     fn default() -> Self {
         Node::Unary(Rc::new(UnaryNode::default()))
+    }
+}
+
+impl From<VariableType> for Node {
+    fn from(arg: VariableType) -> Self {
+        match arg {
+            VariableType::Node(n) => n,
+            VariableType::Constant(c) => Node::Unary(Rc::new(UnaryNode::new(c.into(), UnaryOperator::NoOp))),
+            VariableType::Variable => Node::Unary(Rc::new(UnaryNode::new(VariableType::Variable, UnaryOperator::NoOp)))
+        }
     }
 }
 
