@@ -1,6 +1,6 @@
 use std::{fmt::Display, ops::Deref, rc::Rc};
 
-use sdf_vecs::{Vec3, VecType, ops::{Length, Abs, min_high, mul_high, max_high, div_high}};
+use sdf_vecs::{Vec3, VecType, ops::{Length, Abs, MaxComp, min_high, mul_high, max_high, div_high, add_high}};
 
 use crate::{node::{Args, BinaryNode, UnaryNode, Node}, variable::VariableType};
 
@@ -13,7 +13,8 @@ pub(crate) enum UnaryOperator {
     Length,
     NoOp,
     Neg,
-    Abs
+    Abs,
+    MaxComp,
 }
 
 impl Display for UnaryOperator {
@@ -23,6 +24,7 @@ impl Display for UnaryOperator {
             UnaryOperator::NoOp => write!(f, ""),
             UnaryOperator::Neg => write!(f, "-"),
             UnaryOperator::Abs => write!(f, "abs"),
+            UnaryOperator::MaxComp => write!(f, "max_comp"),
         }
     }
 }
@@ -33,7 +35,8 @@ pub(crate) enum BinaryOperator {
     Min,
     Mul,
     Max,
-    Div
+    Div,
+    Add,
 }
 
 impl Display for BinaryOperator {
@@ -44,6 +47,7 @@ impl Display for BinaryOperator {
             BinaryOperator::Mul => write!(f, "mul"),
             BinaryOperator::Max => write!(f, "max"),
             BinaryOperator::Div => write!(f, "div"),
+            BinaryOperator::Add => write!(f, "add"),
         }
     }
 }
@@ -77,7 +81,7 @@ macro_rules! impl_unary_op {
             }
             macro_rules! $name {
                 ($arg:expr) => {
-                    Node::Unary(Rc::new(UnaryNode::new($arg.into(), UnaryOperator::[<$name:camel>])))
+                    Node::Unary(std::rc::Rc::new(UnaryNode::new($arg.into(), UnaryOperator::[<$name:camel>])))
                 }
             }
         }        
@@ -87,6 +91,7 @@ macro_rules! impl_unary_op {
 impl_unary_op!(length, |v: VecType| v.length().into());
 impl_unary_op!(neg, |v: VecType| (-v).into());
 impl_unary_op!(abs, |v: VecType| v.abs().into());
+impl_unary_op!(max_comp, |v: VecType| v.max_comp().into());
 
 macro_rules! impl_binary_op {
     ($name:ident, $closure:expr) => {
@@ -121,3 +126,4 @@ impl_binary_op!(min, |(a, b)| min_high(&a, &b));
 impl_binary_op!(mul, |(a, b)| mul_high(&a, &b));
 impl_binary_op!(max, |(a, b)| max_high(&a, &b));
 impl_binary_op!(div, |(a, b)| div_high(&a, &b));
+impl_binary_op!(add, |(a, b)| add_high(&a, &b));

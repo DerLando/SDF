@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType};
 
-use crate::{constant::Constant, csg::{difference, intersection, union, union_smooth}, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, simplify::{SimplificationFolder}, variable::VariableType};
+use crate::{constant::Constant, csg::{difference, intersection, union, union_smooth}, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, primitives::{box_2d, box_3d, sphere}, simplify::{SimplificationFolder}, variable::VariableType};
 
 pub struct SdfTree {
     root: Node
@@ -19,6 +19,12 @@ impl Default for SdfTree {
         Self {
             root: Node::default()
         }
+    }
+}
+
+impl From<Node> for SdfTree {
+    fn from(root: Node) -> Self {
+        Self{root}
     }
 }
 
@@ -40,12 +46,19 @@ impl SdfTree {
 /// primitives
 impl SdfTree {
     pub fn circle(radius: f32) -> Self {
-        let r: Constant = radius.into();
-        let root = sub!(length!(VariableType::Variable), r);
+        sphere(radius).into()
+    }
 
-        Self {
-            root
-        }
+    pub fn sphere(radius: f32) -> Self {
+        Self::circle(radius)
+    }
+
+    pub fn rectangle(width: f32, height: f32) -> Self {
+        box_2d(width, height).into()
+    }
+
+    pub fn cuboid(x: f32, y: f32, z: f32) -> Self {
+        box_3d(x, y, z).into()
     }
 }
 

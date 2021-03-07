@@ -9,6 +9,7 @@ mod constant;
 mod variable;
 mod simplify;
 mod csg;
+mod primitives;
 
 pub use {sdf::SdfTree};
 
