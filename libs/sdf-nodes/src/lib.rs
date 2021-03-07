@@ -10,6 +10,7 @@ mod variable;
 mod simplify;
 mod csg;
 mod primitives;
+mod transform;
 
 pub use {sdf::SdfTree};
 

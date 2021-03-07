@@ -40,6 +40,9 @@ impl Operator for UnaryNode {
 
         // test if we need to compress space
         if self.scale != 1.0 {p = p / self.scale};
+
+        // apply transformation to position
+        p = self.transform.transform_point3(p);
         
         match self.op {
             UnaryOperator::Length => length_op(self, &p),
@@ -71,6 +74,8 @@ impl Operator for BinaryNode {
         // test if we need to compress space
         if self.scale != 1.0 {p = p / self.scale};
 
+        // apply transformation to position
+        p = self.transform.transform_point3(p);
 
         match self.op {
             BinaryOperator::Sub => sub_op(self, &p),
@@ -293,5 +298,33 @@ impl FoldArgs for BinaryNode {
             .rhs(args.next().unwrap())
             .op(self.op)
             .build()
+    }
+}
+
+/// Mutable access to transformation components
+/// As the sdf tree should be immutable, it would probably be best to wrap this in an op instead
+pub(crate) trait TransformMut {
+    fn transform_mut(&mut self) -> &mut Transform;
+}
+
+impl TransformMut for UnaryNode {
+    fn transform_mut(&mut self) -> &mut Transform {
+        &mut self.transform
+    }
+}
+
+impl TransformMut for BinaryNode {
+    fn transform_mut(&mut self) -> &mut Transform {
+        &mut self.transform
+    }
+}
+
+impl TransformMut for Node {
+    fn transform_mut(&mut self) -> &mut Transform {
+        match self {
+            Node::Unary(n) => Rc::get_mut(n).unwrap().transform_mut(),
+            Node::Binary(n) => Rc::get_mut(n).unwrap().transform_mut(),
+            _ => unreachable!()
+        }
     }
 }

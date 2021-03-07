@@ -1,8 +1,8 @@
 use std::{fmt::Display, ops::Deref, rc::Rc};
 
-use sdf_vecs::{Vec3, VecType};
+use sdf_vecs::{RotationAxis, TransformHelper, Vec3, VecType, ops::Length};
 
-use crate::{constant::Constant, csg::{difference, intersection, union, union_smooth}, node::{BinaryNode, BinaryNodeBuilder, Node, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, primitives::{box_2d, box_3d, sphere}, simplify::{SimplificationFolder}, variable::VariableType};
+use crate::{constant::Constant, csg::{difference, intersection, union, union_smooth}, node::{BinaryNode, BinaryNodeBuilder, Node, TransformMut, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, primitives::{box_2d, box_3d, sphere}, simplify::{SimplificationFolder}, variable::VariableType};
 
 pub struct SdfTree {
     root: Node
@@ -45,6 +45,10 @@ impl SdfTree {
 
 /// primitives
 impl SdfTree {
+    pub fn point() -> Self {
+        length!(VariableType::Variable).into()
+    }
+
     pub fn circle(radius: f32) -> Self {
         sphere(radius).into()
     }
@@ -96,5 +100,16 @@ impl SdfTree {
             .build()
             .into())
             ;
+    }
+
+    pub fn translate(&mut self, v: &Vec3) {
+        // apply inverse of translation AFTER the original transformation
+        let transform = self.root.transform_mut().clone();
+        *self.root.transform_mut() = TransformHelper::translation(v).inverse() * transform;
+    }
+
+    pub fn rotate(&mut self, angle: f32, axis: RotationAxis) {
+        let transform = self.root.transform_mut().clone();
+        *self.root.transform_mut() = TransformHelper::rotate(angle, axis).inverse() * transform;
     }
 }
