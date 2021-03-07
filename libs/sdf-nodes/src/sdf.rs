@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{RotationAxis, TransformHelper, Vec3, VecType, ops::Length};
 
-use crate::{constant::Constant, csg::{difference, intersection, union, union_smooth}, node::{BinaryNode, BinaryNodeBuilder, Node, TransformMut, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, primitives::{box_2d, box_3d, sphere}, simplify::{SimplificationFolder}, variable::VariableType};
+use crate::{constant::Constant, csg::{difference, intersection, union, union_smooth}, node::{BinaryNode, BinaryNodeBuilder, Node, TransformMut, UnaryNode}, ops::{BinaryOperator, UnaryOperator, Operator}, primitives::{box_2d, box_3d, capsule, sphere}, simplify::{SimplificationFolder}, variable::VariableType};
 
 pub struct SdfTree {
     root: Node
@@ -63,6 +63,10 @@ impl SdfTree {
 
     pub fn cuboid(x: f32, y: f32, z: f32) -> Self {
         box_3d(x, y, z).into()
+    }
+
+    pub fn capsule(a: Vec3, b: Vec3, radius: f32) -> Self {
+        capsule(a, b, radius).into()
     }
 }
 

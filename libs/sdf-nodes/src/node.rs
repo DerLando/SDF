@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::{Deref, DerefMut}, rc::Rc};
 
 use sdf_vecs::{Transform, Vec3, VecType};
 
-use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, max_comp_op, add_op, div_op, length_op, sub_op, min_op, mul_op, max_op, neg_op, abs_op}, variable::VariableType};
+use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, clamp_op, dot_op, max_comp_op, add_op, div_op, length_op, sub_op, min_op, mul_op, max_op, neg_op, abs_op}, variable::VariableType};
 
 pub(crate) struct UnaryNode {
     args: [VariableType; 1],
@@ -84,24 +84,45 @@ impl Operator for BinaryNode {
             BinaryOperator::Max => max_op(self, &p),
             BinaryOperator::Div => div_op(self, &p),
             BinaryOperator::Add => add_op(self, &p),
+            BinaryOperator::Dot => dot_op(self, &p),
         }
     }
 }
 
 pub(crate) struct TernaryNode {
     args: [VariableType; 3],
-    op: TernaryOperator
+    op: TernaryOperator,
+    scale: f32,
+    transform: Transform
+}
+
+impl Display for TernaryNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}({}, {}, {})", self.op, self.args[0], self.args[1], self.args[2])
+    }
 }
 
 impl Operator for TernaryNode {
     fn operate(&self, sample: &Vec3) -> VecType {
-        todo!()
+        let mut p: Vec3 = *sample;
+
+        // test if we need to compress space
+        if self.scale != 1.0 {p = p / self.scale};
+
+        // apply transformation to position
+        p = self.transform.transform_point3(p);
+
+        match self.op {
+            TernaryOperator::Clamp => clamp_op(self, &p),
+        }
     }
 }
 
 pub(crate) struct QuaternaryNode {
     args: [VariableType; 4],
-    op: QuaternaryOperator
+    op: QuaternaryOperator,
+    scale: f32,
+    transform: Transform,
 }
 
 impl Operator for QuaternaryNode {
@@ -164,6 +185,136 @@ impl BinaryNodeBuilder {
     }
 }
 
+pub(crate) struct TernaryNodeBuilder {
+    a: VariableType,
+    b: VariableType,
+    c: VariableType,
+    op: TernaryOperator,
+    scale: f32,
+    transform: Transform
+}
+
+impl TernaryNodeBuilder {
+    pub fn new() -> Self {
+        Self {
+            a: VariableType::Variable,
+            b: VariableType::Variable,
+            c: VariableType::Variable,
+            op: TernaryOperator::Clamp,
+            scale: 1.0,
+            transform: Transform::default()
+        }
+    }
+
+    pub fn a(mut self, a: VariableType) -> Self {
+        self.a = a;
+        self
+    }
+
+    pub fn b(mut self, b: VariableType) -> Self {
+        self.b = b;
+        self
+    }
+
+    pub fn c(mut self, c: VariableType) -> Self {
+        self.c = c;
+        self
+    }
+
+    pub fn op(mut self, op: TernaryOperator) -> Self {
+        self.op = op;
+        self
+    }
+
+    pub fn scale(mut self, scale: f32) -> Self {
+        self.scale = scale;
+        self
+    }
+
+    pub fn transform(mut self, transform: Transform) -> Self {
+        self.transform = transform;
+        self
+    }
+
+    pub fn build(self) -> TernaryNode {
+        TernaryNode {
+            args: [self.a, self.b, self.c],
+            op: self.op,
+            scale: self.scale,
+            transform: self.transform
+        }
+    }
+}
+
+
+pub(crate) struct QuaternaryNodeBuilder {
+    a: VariableType,
+    b: VariableType,
+    c: VariableType,
+    d: VariableType,
+    op: QuaternaryOperator,
+    scale: f32,
+    transform: Transform
+}
+
+impl QuaternaryNodeBuilder {
+    // pub fn new() -> Self {
+    //     Self {
+    //         a: VariableType::Variable,
+    //         b: VariableType::Variable,
+    //         c: VariableType::Variable,
+    //         d: VariableType::Variable,
+    //         op: QuaternaryOperator::Clamp,
+    //         scale: 1.0,
+    //         transform: Transform::default()
+    //     }
+    // }
+
+    pub fn a(mut self, a: VariableType) -> Self {
+        self.a = a;
+        self
+    }
+
+    pub fn b(mut self, b: VariableType) -> Self {
+        self.b = b;
+        self
+    }
+
+    pub fn c(mut self, c: VariableType) -> Self {
+        self.c = c;
+        self
+    }
+
+    pub fn d(mut self, d: VariableType) -> Self {
+        self.d = d;
+        self
+    }
+
+    pub fn op(mut self, op: QuaternaryOperator) -> Self {
+        self.op = op;
+        self
+    }
+
+    pub fn scale(mut self, scale: f32) -> Self {
+        self.scale = scale;
+        self
+    }
+
+    pub fn transform(mut self, transform: Transform) -> Self {
+        self.transform = transform;
+        self
+    }
+
+    pub fn build(self) -> QuaternaryNode {
+        QuaternaryNode {
+            args: [self.a, self.b, self.c, self.d],
+            op: self.op,
+            scale: self.scale,
+            transform: self.transform
+        }
+    }
+}
+
 #[derive(Clone)]
 pub(crate) enum Node {
     Unary(Rc<UnaryNode>),
@@ -177,6 +328,7 @@ impl Display for Node {
         match self {
             Node::Unary(n) => write!(f, "{}", n),
             Node::Binary(n) => write!(f, "{}", n),
+            Node::Ternary(n) => write!(f, "{}", n),
             _ => unreachable!()
         }
     }

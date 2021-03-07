@@ -1,8 +1,8 @@
 use std::{fmt::Display, ops::Deref, rc::Rc};
 
-use sdf_vecs::{Vec3, VecType, ops::{Length, Abs, MaxComp, min_high, mul_high, max_high, div_high, add_high}};
+use sdf_vecs::{Vec3, VecType, ComponentAccess, ops::{Length, Abs, MaxComp, min_high, mul_high, max_high, div_high, add_high, dot_high, Clamp}};
 
-use crate::{node::{Args, BinaryNode, UnaryNode, Node}, variable::VariableType};
+use crate::{node::{Args, BinaryNode, UnaryNode, TernaryNode, QuaternaryNode, Node}, variable::VariableType};
 
 pub(crate) trait Operator {
     fn operate(&self, sample: &Vec3) -> VecType;
@@ -37,6 +37,7 @@ pub(crate) enum BinaryOperator {
     Max,
     Div,
     Add,
+    Dot,
 }
 
 impl Display for BinaryOperator {
@@ -48,16 +49,24 @@ impl Display for BinaryOperator {
             BinaryOperator::Max => write!(f, "max"),
             BinaryOperator::Div => write!(f, "div"),
             BinaryOperator::Add => write!(f, "add"),
+            BinaryOperator::Dot => write!(f, "dot"),
         }
     }
 }
 
 pub(crate) enum TernaryOperator {
+    Clamp
+}
 
+impl Display for TernaryOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TernaryOperator::Clamp => write!(f, "clamp"),
+        }
+    }
 }
 
 pub(crate) enum QuaternaryOperator {
-
 }
 
 impl Operator for VariableType {
@@ -127,3 +136,65 @@ impl_binary_op!(mul, |(a, b)| mul_high(&a, &b));
 impl_binary_op!(max, |(a, b)| max_high(&a, &b));
 impl_binary_op!(div, |(a, b)| div_high(&a, &b));
 impl_binary_op!(add, |(a, b)| add_high(&a, &b));
+impl_binary_op!(dot, |(a, b)| dot_high(&a, &b));
+
+macro_rules! impl_ternary_op {
+    ($name:ident, $closure:expr) => {
+        paste::item! {
+            pub(crate) fn [<$name _op>](node: &TernaryNode, sample: &Vec3) -> VecType {
+                let args = node.args();
+                ($closure)(
+                    (args[0].operate(sample), args[1].operate(sample), args[2].operate(sample))
+                )
+            }
+
+            macro_rules! $name {
+                ($a:expr, $b:expr, $c:expr) => {
+                    {
+                        let node = 
+                        TernaryNodeBuilder::new()
+                            .a($a.into())
+                            .b($b.into())
+                            .c($c.into())
+                            .op(TernaryOperator::[<$name:camel>])
+                            .build()
+                            ;
+                        Node::Ternary(Rc::new(node))
+                    }
+                }
+            }            
+        }
+    };
+}
+
+impl_ternary_op!(clamp, |(a, b, c)| VecType::clamp(&a, VecType::x(&b), VecType::x(&c)));
+
+macro_rules! impl_quaternary_op {
+    ($name:ident, $closure:expr) => {
+        paste::item! {
+            pub(crate) fn [<$name _op>](node: &QuaternaryNode, sample: &Vec3) -> VecType {
+                let args = node.args();
+                ($closure)(
+                    (args[0].operate(sample), args[1].operate(sample), args[2].operate(sample), args[3].operate(sample))
+                )
+            }
+
+            macro_rules! $name {
+                ($a:expr, $b:expr, $c:expr, $d: expr) => {
+                    {
+                        let node = 
+                        QuaternaryNodeBuilder::new()
+                            .a($a.into())
+                            .b($b.into())
+                            .c($c.into())
+                            .d($d.into())
+                            .op(QuaternaryOperator::[<$name:camel>])
+                            .build()
+                            ;
+                        Node::Quaternary(Rc::new(node))
+                    }
+                }
+            }            
+        }
+    };
+}
