@@ -2,7 +2,7 @@ use std::{fmt::Display, ops::{Deref, DerefMut}, rc::Rc};
 
 use sdf_vecs::{Transform, Vec3, VecType};
 
-use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, length, sub, min, mul}, variable::VariableType};
+use crate::{ops::{BinaryOperator, Operator, QuaternaryOperator, TernaryOperator, UnaryOperator, length_op, sub_op, min_op, mul_op}, variable::VariableType};
 
 pub(crate) struct UnaryNode {
     args: [VariableType; 1],
@@ -42,7 +42,7 @@ impl Operator for UnaryNode {
         if self.scale != 1.0 {p = p / self.scale};
         
         match self.op {
-            UnaryOperator::Length => length(self, &p),
+            UnaryOperator::Length => length_op(self, &p),
             UnaryOperator::NoOp => VecType::Vec3(p),
         }
     }
@@ -70,9 +70,9 @@ impl Operator for BinaryNode {
 
 
         match self.op {
-            BinaryOperator::Sub => sub(self, &p),
-            BinaryOperator::Min => min(self, &p),
-            BinaryOperator::Mul => mul(self, &p),
+            BinaryOperator::Sub => sub_op(self, &p),
+            BinaryOperator::Min => min_op(self, &p),
+            BinaryOperator::Mul => mul_op(self, &p),
         }
     }
 }

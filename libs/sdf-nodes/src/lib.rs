@@ -1,10 +1,12 @@
+
 use sdf_vecs::{Vec3, VecType, ops::{Length, min_high, mul_high}};
 
+#[macro_use]
+mod ops;
 mod sdf;
 mod node;
 mod constant;
 mod variable;
-mod ops;
 mod simplify;
 
 pub use {sdf::SdfTree};
@@ -28,11 +30,11 @@ mod tests {
 
         assert_eq!(0.0, union.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
 
-        let scale = SdfTree::circle(1.0);
-        let scale = SdfTree::scale(scale, 2.0);
-        assert_eq!(0.0, scale.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
-        let scale = SdfTree::scale(scale, 0.5);
-        assert_eq!(0.0, scale.sign_at(&Vec3::new(1.0, 0.0, 0.0)));
+        let mut circle = SdfTree::circle(1.0);
+        circle.scale(2.0);
+        assert_eq!(0.0, circle.sign_at(&Vec3::new(2.0, 0.0, 0.0)));
+        circle.scale(0.5);
+        assert_eq!(0.0, circle.sign_at(&Vec3::new(1.0, 0.0, 0.0)));
 
     }
 }

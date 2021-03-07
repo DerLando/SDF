@@ -36,25 +36,13 @@ impl SdfTree {
     }
 
     pub fn circle(radius: f32) -> Self {
-        // set up tree
-        let mut tree = Self::default();
+        let r: VariableType = radius.into();
+        let root = sub!(length!(VariableType::Variable), r);
 
-        // set up nodes
-        let length_node = UnaryNode::new(
-            VariableType::Variable,
-            UnaryOperator::Length
-        );
-
-        let sub_node = 
-            BinaryNodeBuilder::new()
-                .lhs(length_node.into())
-                .rhs(radius.into())
-                .op(BinaryOperator::Sub)
-                .build()
-                ;
-
-        tree.root = Node::Binary(Rc::new(sub_node));
-        tree
+        match root {
+            VariableType::Node(n) => Self {root: n},
+            _ => unreachable!()
+        }
     }
 
     pub fn union(a: Self, b: Self) -> Self {
@@ -73,22 +61,18 @@ impl SdfTree {
         union
     }
 
-    pub fn scale(mut sdf: Self, factor: f32) -> Self {
+    pub fn scale(&mut self, factor: f32) {
         let s: Constant = factor.into();
 
         // wrap root in mul op
-        let root = 
+        self.root = 
         Node::Binary(BinaryNodeBuilder::new()
-            .lhs(VariableType::Node(sdf.root))
+            .lhs(VariableType::Node(self.root.clone()))
             .rhs(VariableType::Constant(s))
             .op(BinaryOperator::Mul)
             .scale(factor)
             .build()
             .into())
             ;
-
-        Self {
-            root
-        }
     }
 }

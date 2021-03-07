@@ -1,8 +1,8 @@
-use std::{fmt::Display, ops::Deref};
+use std::{fmt::Display, ops::Deref, rc::Rc};
 
 use sdf_vecs::{Vec3, VecType, ops::{Length, min_high, mul_high}};
 
-use crate::{node::{Args, BinaryNode, UnaryNode}, variable::VariableType};
+use crate::{node::{Args, BinaryNode, UnaryNode, Node}, variable::VariableType};
 
 pub(crate) trait Operator {
     fn operate(&self, sample: &Vec3) -> VecType;
@@ -60,12 +60,19 @@ impl Operator for VariableType {
 
 macro_rules! impl_unary_op {
     ($name:ident, $closure:expr) => {
-        pub(crate) fn $name(node: &UnaryNode, sample: &Vec3) -> VecType {
-            ($closure)(
-            node.args()[0]
-                .operate(sample)
-            )
-        }
+        paste::item! {
+            pub(crate) fn [<$name _op>](node: &UnaryNode, sample: &Vec3) -> VecType {
+                ($closure)(
+                node.args()[0]
+                    .operate(sample)
+                )
+            }
+            macro_rules! $name {
+                ($arg:expr) => {
+                    VariableType::Node(Node::Unary(Rc::new(UnaryNode::new($arg, UnaryOperator::[<$name:camel>]))))
+                }
+            }
+        }        
     };
 }
 
@@ -73,11 +80,28 @@ impl_unary_op!(length, |v: VecType| v.length().into());
 
 macro_rules! impl_binary_op {
     ($name:ident, $closure:expr) => {
-        pub(crate) fn $name(node: &BinaryNode, sample: &Vec3) -> VecType {
-            let args = node.args();
-            ($closure)(
-                (args[0].operate(sample), args[1].operate(sample))
-            )
+        paste::item! {
+            pub(crate) fn [<$name _op>](node: &BinaryNode, sample: &Vec3) -> VecType {
+                let args = node.args();
+                ($closure)(
+                    (args[0].operate(sample), args[1].operate(sample))
+                )
+            }
+
+            macro_rules! $name {
+                ($lhs:expr, $rhs:expr) => {
+                    {
+                        let node = 
+                        BinaryNodeBuilder::new()
+                            .lhs($lhs)
+                            .rhs($rhs)
+                            .op(BinaryOperator::[<$name:camel>])
+                            .build()
+                            ;
+                        VariableType::Node(Node::Binary(Rc::new(node)))
+                    }
+                }
+            }            
         }
     };
 }

@@ -5,11 +5,11 @@ use sdf_vecs::Vec3;
 
 
 fn circle_benchmark(c: &mut Criterion) {
-    let circle = SdfTree::circle(10.0);
-    let scaled = SdfTree::scale(circle, 1.618);
+    let mut circle = SdfTree::circle(10.0);
+    circle.scale(1.618);
     let sample = Vec3::new(-0.43678, 7.118, -2.345);
     c.bench_function("circle_scale_node_benchmark", |b| b.iter(|| {
-        scaled.sign_at(&sample)
+        circle.sign_at(&sample)
     }));
 }
 
